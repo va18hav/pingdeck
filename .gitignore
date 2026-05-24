@@ -1,0 +1,15 @@
+# Binaries
+pingdeck
+bin/
+
+# Environment
+.env
+web/.env
+
+# Dependencies & build
+web/node_modules/
+web/dist/
+
+# OS
+.DS_Store
+*.log
