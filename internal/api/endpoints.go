@@ -75,3 +75,18 @@ func (h *EndpointHandler) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error encoding the endpoint", http.StatusInternalServerError)
 	}
 }
+
+func (h *EndpointHandler) List(w http.ResponseWriter, r *http.Request) {
+	endpoints, err := h.store.ListEndpoints(r.Context())
+	if err != nil {
+		log.Printf("error fetching endpoints: %v", err)
+		http.Error(w, "Failed to fetch endpoints", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(endpoints); err != nil {
+		log.Printf("error encoding endpoints response: %v", err)
+		http.Error(w, "error encoding endpoints response", http.StatusInternalServerError)
+	}
+}
