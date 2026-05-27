@@ -29,6 +29,7 @@ func main() {
 
 	http.HandleFunc("GET /healthz", handleHealth)
 	http.HandleFunc("GET /api/v1/endpoints", hep.List)
+	http.HandleFunc("GET /api/v1/endpoints/{id}", hep.Get)
 	http.HandleFunc("POST /api/v1/endpoints", hep.Create)
 
 	fmt.Println("PingDeck listening on :8080")
