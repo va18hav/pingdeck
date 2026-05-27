@@ -62,3 +62,32 @@ func ListEndpointsString() string {
 	SELECT id, name, target_url, provider, COALESCE(inbound_secret, ''), signing_secret, max_retries, timeout_ms, COALESCE(slack_webhook_url, ''), is_active, created_at, updated_at FROM endpoints ORDER BY created_at DESC
 	`
 }
+
+func (s *Store) GetEndpoint(ctx context.Context, EndpointID string) (*Endpoint, error) {
+	var ep Endpoint
+	sql := GetEndpointString()
+	err := s.pool.QueryRow(ctx, sql, EndpointID).Scan(
+		&ep.ID,
+		&ep.Name,
+		&ep.TargetURL,
+		&ep.Provider,
+		&ep.InboundSecret,
+		&ep.SigningSecret,
+		&ep.MaxRetries,
+		&ep.TimeoutMS,
+		&ep.SlackWebhookURL,
+		&ep.IsActive,
+		&ep.CreatedAt,
+		&ep.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &ep, nil
+}
+
+func GetEndpointString() string {
+	return `
+	SELECT id, name, target_url, provider, COALESCE(inbound_secret, ''), signing_secret, max_retries, timeout_ms, COALESCE(slack_webhook_url, ''), is_active, created_at, updated_at FROM endpoints WHERE id = $1
+	`
+}
