@@ -31,10 +31,34 @@ func (s *Store) CreateEndpoint(ctx context.Context, e *Endpoint) (*Endpoint, err
 	return e, nil
 }
 
+func (s *Store) ListEndpoints(ctx context.Context) ([]Endpoint, error) {
+	sql := ListEndpointsString()
+	rows, err := s.pool.Query(ctx, sql)
+	if err != nil {
+		return nil, err
+	}
+	endpoints := []Endpoint{}
+	defer rows.Close()
+	for rows.Next() {
+		var ep Endpoint
+		if err := rows.Scan(&ep.ID, &ep.Name, &ep.TargetURL, &ep.Provider, &ep.InboundSecret, &ep.SigningSecret, &ep.MaxRetries, &ep.TimeoutMS, &ep.SlackWebhookURL, &ep.IsActive, &ep.CreatedAt, &ep.UpdatedAt); err != nil {
+			return nil, err
+		}
+		endpoints = append(endpoints, ep)
+	}
+	return endpoints, nil
+}
+
 func InsertEndpointString() string {
 	return `
 	INSERT INTO endpoints (name, target_url, provider, inbound_secret, signing_secret, max_retries, timeout_ms, slack_webhook_url)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 	RETURNING id, created_at, updated_at
+	`
+}
+
+func ListEndpointsString() string {
+	return `
+	SELECT id, name, target_url, provider, COALESCE(inbound_secret, ''), signing_secret, max_retries, timeout_ms, COALESCE(slack_webhook_url, ''), is_active, created_at, updated_at FROM endpoints ORDER BY created_at DESC
 	`
 }
