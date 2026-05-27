@@ -90,3 +90,19 @@ func (h *EndpointHandler) List(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error encoding endpoints response", http.StatusInternalServerError)
 	}
 }
+
+func (h *EndpointHandler) Get(w http.ResponseWriter, r *http.Request) {
+	EndpointID := r.PathValue("id")
+	endpoint, err := h.store.GetEndpoint(r.Context(), EndpointID)
+	if err != nil {
+		log.Printf("error fetching endpoint: %v", err)
+		http.Error(w, "Failed to fetch endpoint", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(endpoint); err != nil {
+		log.Printf("error encoding endpoint response: %v", err)
+		http.Error(w, "error encoding endpoint response", http.StatusInternalServerError)
+	}
+}
