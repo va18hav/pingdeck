@@ -25,12 +25,14 @@ func main() {
 		log.Fatal(err)
 	}
 	hep := api.NewEndpoint(store)
+	hwe := api.NewEvent(store)
 	defer store.Close()
 
 	http.HandleFunc("GET /healthz", handleHealth)
 	http.HandleFunc("GET /api/v1/endpoints", hep.List)
 	http.HandleFunc("GET /api/v1/endpoints/{id}", hep.Get)
 	http.HandleFunc("POST /api/v1/endpoints", hep.Create)
+	http.HandleFunc("POST /api/v1/events/{endpoint_id}", hwe.Ingest)
 
 	fmt.Println("PingDeck listening on :8080")
 	err = http.ListenAndServe(":8080", http.DefaultServeMux)
