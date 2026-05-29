@@ -50,3 +50,45 @@ func InsertEventString() string {
 	RETURNING id, status, attempt_count, next_retry_at, created_at, updated_at
 	`
 }
+
+// ClaimDueEvents atomically claims up to limit due events —
+// FOR UPDATE SKIP LOCKED in the CTE flips them to PROCESSING so concurrent
+// workers (or a second instance) never double-deliver.
+func (s *Store) ClaimDueEvents(ctx context.Context, limit int) ([]WebhookEvent, error) {
+	sql := ClaimEventString()
+	rows, err := s.pool.Query(ctx, sql, limit)
+	if err != nil {
+		return nil, err
+	}
+	due_events := []WebhookEvent{}
+	defer rows.Close()
+	for rows.Next() {
+		var we WebhookEvent
+		if err := rows.Scan(&we.ID, &we.EndpointID, &we.Headers, &we.RawBody, &we.ContentType, &we.AttemptCount); err != nil {
+			return nil, err
+		}
+		due_events = append(due_events, we)
+	}
+	return due_events, nil
+}
+
+func ClaimEventString() string {
+	return `
+	WITH due_events AS(
+		SELECT id
+		FROM webhook_events
+		WHERE status IN ('PENDING', 'RETRYING')
+			AND next_retry_at <= NOW()
+		ORDER BY next_retry_at ASC
+		LIMIT $1
+		FOR UPDATE SKIP LOCKED
+	)
+	UPDATE webhook_events e
+	SET status = 'PROCESSING',
+		locked_at = NOW(),
+		updated_at = NOW()
+	FROM due_events
+	WHERE e.id = due_events.id
+	RETURNING e.id, e.endpoint_id, e.headers, e.raw_body, e.content_type, e.attempt_count
+	`
+}
