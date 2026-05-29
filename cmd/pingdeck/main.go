@@ -10,6 +10,7 @@ import (
 	"pingdeck/internal/api"
 	"pingdeck/internal/config"
 	"pingdeck/internal/db"
+	"pingdeck/internal/worker"
 )
 
 func handleHealth(w http.ResponseWriter, r *http.Request) {
@@ -34,6 +35,8 @@ func main() {
 	http.HandleFunc("POST /api/v1/endpoints", hep.Create)
 	http.HandleFunc("POST /api/v1/events/{endpoint_id}", hwe.Ingest)
 
+	wk := worker.NewWorker(store)
+	go wk.Start(ctx)
 	fmt.Println("PingDeck listening on :8080")
 	err = http.ListenAndServe(":8080", http.DefaultServeMux)
 	if err != nil {
