@@ -1,6 +1,12 @@
 package worker
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"io"
+	"log"
+	"net/http"
 	"pingdeck/internal/db"
 	"time"
 )
@@ -17,4 +23,58 @@ func nextStatus(ep *db.Endpoint, ev *db.WebhookEvent) db.Status {
 // backoffDelay returns the retry delay for attempt N: exponential 2^attempt seconds.
 func backoffDelay(attempt int) time.Duration {
 	return time.Duration(1<<attempt) * time.Second
+}
+
+// Deliver performs one outbound attempt against the endpoint's target URL.
+func (w *Worker) Deliver(ctx context.Context, ev *db.WebhookEvent) error {
+	ep, err := w.store.GetEndpoint(ctx, ev.EndpointID)
+	if err != nil {
+		return err
+	}
+
+	start := time.Now()
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, ep.TargetURL, bytes.NewReader(ev.RawBody))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", ev.ContentType)
+	req.Header.Set("X-PingDeck-Event-Id", ev.ID)
+
+	client := http.Client{Timeout: time.Duration(ep.TimeoutMS) * time.Millisecond}
+	resp, err := client.Do(req)
+	execMS := int(time.Since(start).Milliseconds())
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	respBody, _ := io.ReadAll(resp.Body)
+	respHeaders, _ := json.Marshal(resp.Header)
+
+	status := db.StatusDelivered
+	nextRetryAt := time.Now()
+	if failed := resp.StatusCode < 200 || resp.StatusCode >= 300; failed {
+		status = nextStatus(ep, ev)
+		nextRetryAt = time.Now().Add(backoffDelay(ev.AttemptCount))
+	}
+
+	result := db.DeliveryResult{
+		EventID:     ev.ID,
+		Status:      status,
+		NextRetryAt: nextRetryAt,
+		RespStatus:  resp.StatusCode,
+		RespHeaders: respHeaders,
+		RespBody:    string(respBody),
+		ExecMS:      execMS,
+	}
+	return w.record(ctx, ep, ev, result)
+}
+
+func (w *Worker) record(ctx context.Context, ep *db.Endpoint, ev *db.WebhookEvent, r db.DeliveryResult) error {
+	if err := w.store.LogDelivery(ctx, r); err != nil {
+		return err
+	}
+	log.Printf("event %s -> %s attempt: %s (resp=%d, exec=%dms, next=%s)",
+		ev.ID, ep.Name, r.Status, r.RespStatus, r.ExecMS, r.NextRetryAt.Format("03:04:05PM"))
+	return nil
 }
