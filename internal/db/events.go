@@ -92,3 +92,32 @@ func ClaimEventString() string {
 	RETURNING e.id, e.endpoint_id, e.headers, e.raw_body, e.content_type, e.attempt_count
 	`
 }
+
+func (s *Store) ListEvents(ctx context.Context, endpointID, status *string, limit int) ([]WebhookEvent, error) {
+	sql := ListEventsString()
+	rows, err := s.pool.Query(ctx, sql, endpointID, status, limit)
+	if err != nil {
+		return nil, err
+	}
+	events := []WebhookEvent{}
+	defer rows.Close()
+	for rows.Next() {
+		var we WebhookEvent
+		if err := rows.Scan(&we.ID, &we.EndpointID, &we.Headers, &we.RawBody, &we.ContentType, &we.Status, &we.AttemptCount, &we.NextRetryAt, &we.CreatedAt, &we.UpdatedAt); err != nil {
+			return nil, err
+		}
+		events = append(events, we)
+	}
+	return events, nil
+}
+
+func ListEventsString() string {
+	return `
+	SELECT id, endpoint_id, headers, raw_body, content_type, status, attempt_count, next_retry_at, created_at, updated_at
+	FROM webhook_events
+	WHERE ($1::uuid IS NULL OR endpoint_id = $1::uuid)
+	  AND ($2::event_status IS NULL OR status = $2::event_status)
+	ORDER BY created_at DESC, id DESC
+	LIMIT $3
+	`
+}
