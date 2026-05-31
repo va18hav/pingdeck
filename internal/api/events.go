@@ -49,3 +49,26 @@ func (h *EventHandler) Ingest(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error encoding the event", http.StatusInternalServerError)
 	}
 }
+
+func (h *EventHandler) List(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
+	var endpointID, status *string
+	if v := q.Get("endpoint_id"); v != "" {
+		endpointID = &v
+	}
+	if v := q.Get("status"); v != "" {
+		status = &v
+	}
+	events, err := h.store.ListEvents(r.Context(), endpointID, status, 50)
+	if err != nil {
+		log.Printf("error fetching the events: %v", err)
+		http.Error(w, "Failed to fetch the events", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(events); err != nil {
+		log.Printf("error encoding events response: %v", err)
+		http.Error(w, "Error encoding the events", http.StatusInternalServerError)
+	}
+}
