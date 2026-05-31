@@ -88,3 +88,19 @@ func (h *EventHandler) Get(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error encoding the event", http.StatusInternalServerError)
 	}
 }
+
+func (h *EventHandler) Replay(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("event_id")
+	we, err := h.store.ReplayEvent(r.Context(), id)
+	if err != nil {
+		log.Printf("error replaying the event: %v", err)
+		http.Error(w, "Failed to replay the event", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusAccepted)
+	if err := json.NewEncoder(w).Encode(we); err != nil {
+		log.Printf("error encoding replay response: %v", err)
+		http.Error(w, "Error encoding the event", http.StatusInternalServerError)
+	}
+}
