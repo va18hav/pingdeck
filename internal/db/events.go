@@ -121,3 +121,39 @@ func ListEventsString() string {
 	LIMIT $3
 	`
 }
+
+type EventWithAttempts struct {
+	Event    WebhookEvent    `json:"event"`
+	Attempts json.RawMessage `json:"attempts"`
+}
+
+func (s *Store) GetEventWithAttempts(ctx context.Context, id string) (*EventWithAttempts, error) {
+	sql := GetEventWithAttemptsString()
+	row := s.pool.QueryRow(ctx, sql, id)
+	var ewa EventWithAttempts
+	err := row.Scan(
+		&ewa.Event.ID, &ewa.Event.EndpointID, &ewa.Event.Headers, &ewa.Event.RawBody,
+		&ewa.Event.ContentType, &ewa.Event.Status, &ewa.Event.AttemptCount,
+		&ewa.Event.NextRetryAt, &ewa.Event.CreatedAt, &ewa.Event.UpdatedAt,
+		&ewa.Attempts,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &ewa, nil
+}
+
+func GetEventWithAttemptsString() string {
+	return `
+	SELECT e.id, e.endpoint_id, e.headers, e.raw_body, e.content_type, e.status,
+	       e.attempt_count, e.next_retry_at, e.created_at, e.updated_at,
+	       COALESCE(
+	           json_agg(a.* ORDER BY a.attempt_number DESC) FILTER (WHERE a.id IS NOT NULL),
+	           '[]'::json
+	       ) AS attempts
+	FROM webhook_events e
+	LEFT JOIN delivery_attempts a ON a.event_id = e.id
+	WHERE e.id = $1
+	GROUP BY e.id
+	`
+}
