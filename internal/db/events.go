@@ -157,3 +157,27 @@ func GetEventWithAttemptsString() string {
 	GROUP BY e.id
 	`
 }
+
+func (s *Store) ReplayEvent(ctx context.Context, id string) (*WebhookEvent, error) {
+	sql := ReplayEventString()
+	row := s.pool.QueryRow(ctx, sql, id)
+	var we WebhookEvent
+	err := row.Scan(&we.ID, &we.Status, &we.AttemptCount, &we.NextRetryAt)
+	if err != nil {
+		return nil, err
+	}
+	return &we, nil
+}
+
+func ReplayEventString() string {
+	return `
+	UPDATE webhook_events
+	SET status = 'PENDING',
+	    attempt_count = 0,
+	    next_retry_at = NOW(),
+	    updated_at = NOW(),
+	    locked_at = NULL
+	WHERE id = $1 AND status IN ('FAILED')
+	RETURNING id, status, attempt_count, next_retry_at
+	`
+}
