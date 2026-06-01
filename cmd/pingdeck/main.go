@@ -33,6 +33,9 @@ func main() {
 	http.HandleFunc("GET /api/v1/endpoints", hep.List)
 	http.HandleFunc("GET /api/v1/endpoints/{id}", hep.Get)
 	http.HandleFunc("POST /api/v1/endpoints", hep.Create)
+	http.HandleFunc("GET /api/v1/events", hwe.List)
+	http.HandleFunc("GET /api/v1/events/{event_id}", hwe.Get)
+	http.HandleFunc("POST /api/v1/events/{event_id}/replay", hwe.Replay)
 	http.HandleFunc("POST /api/v1/events/{endpoint_id}", hwe.Ingest)
 
 	wk := worker.NewWorker(store)
