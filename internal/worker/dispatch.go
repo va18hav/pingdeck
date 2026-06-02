@@ -38,6 +38,7 @@ func (w *Worker) Deliver(ctx context.Context, ev *db.WebhookEvent) error {
 		return err
 	}
 	req.Header.Set("Content-Type", ev.ContentType)
+	req.Header.Set("X-PingDeck-Signature", signPayload(ep.SigningSecret, ev.RawBody))
 	req.Header.Set("X-PingDeck-Event-Id", ev.ID)
 
 	client := http.Client{Timeout: time.Duration(ep.TimeoutMS) * time.Millisecond}
