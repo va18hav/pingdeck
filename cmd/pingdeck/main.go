@@ -41,7 +41,7 @@ func main() {
 	wk := worker.NewWorker(store)
 	go wk.Start(ctx)
 	fmt.Println("PingDeck listening on :8080")
-	err = http.ListenAndServe(":8080", http.DefaultServeMux)
+	err = http.ListenAndServe(":8080", api.WithCORS(http.DefaultServeMux))
 	if err != nil {
 		log.Fatal(err)
 	}
