@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"pingdeck/internal/db"
+	"pingdeck/internal/ingest"
 )
 
 type EventHandler struct {
@@ -18,11 +19,23 @@ func NewEvent(store *db.Store) *EventHandler {
 
 func (h *EventHandler) Ingest(w http.ResponseWriter, r *http.Request) {
 	EndpointID := r.PathValue("endpoint_id")
+	ep, err := h.store.GetEndpoint(r.Context(), EndpointID)
+	if err != nil {
+		http.Error(w, "Failed to process the event", http.StatusInternalServerError)
+		return
+	}
 	raw, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Failed to parse the raw_body: %v", err)
 		http.Error(w, "Failed to parse the event", http.StatusInternalServerError)
 		return
+	}
+	if ep.Provider != "" {
+		if err := ingest.VerifyInbound(ep.Provider, ep.InboundSecret, r.Header, raw); err != nil {
+			log.Printf("ingest verification failed for endpoint %s: %v", EndpointID, err)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
 	}
 	headersJSON, err := json.Marshal(r.Header)
 	if err != nil {
