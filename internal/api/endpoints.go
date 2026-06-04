@@ -106,3 +106,50 @@ func (h *EndpointHandler) Get(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error encoding endpoint response", http.StatusInternalServerError)
 	}
 }
+
+func (h *EndpointHandler) Update(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	var req CreateEndpointRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Error decoding the endpoint", http.StatusBadRequest)
+		return
+	}
+	ep := db.Endpoint{
+		ID: id, Name: req.Name, TargetURL: req.TargetURL, Provider: req.Provider,
+		InboundSecret: req.InboundSecret, MaxRetries: req.MaxRetries,
+		TimeoutMS: req.TimeoutMS, SlackWebhookURL: req.SlackWebhookURL,
+	}
+	endpoint, err := h.store.UpdateEndpoint(r.Context(), &ep)
+	if err != nil {
+		http.Error(w, "Failed to update the endpoint", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(endpoint)
+}
+
+func (h *EndpointHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	if err := h.store.DeleteEndpoint(r.Context(), id); err != nil {
+		http.Error(w, "Failed to delete the endpoint", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *EndpointHandler) RotateSecret(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	newSecret, err := generateSigningSecret()
+	if err != nil {
+		http.Error(w, "Failed to generate the signing secret", http.StatusInternalServerError)
+		return
+	}
+	if err := h.store.UpdateSigningSecret(r.Context(), id, newSecret); err != nil {
+		http.Error(w, "Failed to rotate the signing secret", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(map[string]string{"SigningSecret": newSecret})
+}
