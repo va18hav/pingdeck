@@ -91,3 +91,45 @@ func GetEndpointString() string {
 	SELECT id, name, target_url, provider, COALESCE(inbound_secret, ''), signing_secret, max_retries, timeout_ms, COALESCE(slack_webhook_url, ''), is_active, created_at, updated_at FROM endpoints WHERE id = $1
 	`
 }
+
+func (s *Store) UpdateEndpoint(ctx context.Context, e *Endpoint) (*Endpoint, error) {
+	sql := UpdateEndpointString()
+	row := s.pool.QueryRow(ctx, sql, e.Name, e.TargetURL, e.Provider, e.InboundSecret, e.MaxRetries, e.TimeoutMS, e.SlackWebhookURL, e.ID)
+	var ep Endpoint
+	err := row.Scan(
+		&ep.ID, &ep.Name, &ep.TargetURL, &ep.Provider, &ep.InboundSecret,
+		&ep.SigningSecret, &ep.MaxRetries, &ep.TimeoutMS, &ep.SlackWebhookURL,
+		&ep.IsActive, &ep.CreatedAt, &ep.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &ep, nil
+}
+
+func (s *Store) DeleteEndpoint(ctx context.Context, id string) error {
+	_, err := s.pool.Exec(ctx, DeleteEndpointString(), id)
+	return err
+}
+
+func (s *Store) UpdateSigningSecret(ctx context.Context, id, newSecret string) error {
+	_, err := s.pool.Exec(ctx, UpdateSigningSecretString(), newSecret, id)
+	return err
+}
+
+func UpdateSigningSecretString() string {
+	return `UPDATE endpoints SET signing_secret = $1, updated_at = NOW() WHERE id = $2`
+}
+
+func DeleteEndpointString() string {
+	return `DELETE FROM endpoints WHERE id = $1`
+}
+
+func UpdateEndpointString() string {
+	return `
+	UPDATE endpoints
+	SET name = $1, target_url = $2, provider = $3, inbound_secret = $4, max_retries = $5, timeout_ms = $6, slack_webhook_url = $7, updated_at = NOW()
+	WHERE id = $8
+	RETURNING id, name, target_url, provider, COALESCE(inbound_secret, ''), signing_secret, max_retries, timeout_ms, COALESCE(slack_webhook_url, ''), is_active, created_at, updated_at
+	`
+}
