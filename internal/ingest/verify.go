@@ -20,13 +20,23 @@ var (
 
 type verifyFunc func(secret string, h http.Header, body []byte) error
 
-var verifiers = map[string]verifyFunc{}
+var verifiers = map[string]verifyFunc{
+	"github":      verifyGithub,
+	"custom":      verifyCustom,
+	"stripe":      verifyStripe,
+	"shopify":     verifyShopify,
+	"woocommerce": verifyWooCommerce,
+	"razorpay":    verifyRazorpay,
+	"sentry":      verifySentry,
+	"slack":       verifySlack,
+}
 
 func VerifyInbound(provider, secret string, h http.Header, body []byte) error {
 	fn, ok := verifiers[provider]
 	if !ok {
 		return ErrUnknownProvider
 	}
+	// Endpoint was created without a source secret — nothing to verify against.
 	if secret == "" {
 		return ErrMissingSecret
 	}
@@ -34,16 +44,21 @@ func VerifyInbound(provider, secret string, h http.Header, body []byte) error {
 }
 
 // hmacEqual compares two signature strings in constant time.
+// == stops at the first mismatching byte, letting a guessing attacker
+// measure how close each guess was.
 func hmacEqual(a, b string) bool {
 	return hmac.Equal([]byte(a), []byte(b))
 }
 
+// computeHMAC is the shared primitive every provider builds on:
+// HMAC-SHA256 of `content` with `secret`, as lowercase hex.
 func computeHMAC(secret string, content []byte) string {
 	mac := hmac.New(sha256.New, []byte(secret))
 	mac.Write(content)
 	return hex.EncodeToString(mac.Sum(nil))
 }
 
+// computeHMACBase64 is the base64 variant (Shopify/WooCommerce encode their hex-less MACs).
 func computeHMACBase64(secret string, content []byte) string {
 	mac := hmac.New(sha256.New, []byte(secret))
 	mac.Write(content)
