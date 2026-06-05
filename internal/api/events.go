@@ -122,3 +122,17 @@ func (h *EventHandler) Replay(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error encoding the event", http.StatusInternalServerError)
 	}
 }
+
+func (h *EventHandler) ReplayEndpoint(w http.ResponseWriter, r *http.Request) {
+	endpointID := r.PathValue("endpoint_id")
+	n, err := h.store.ReplayEndpointEvents(r.Context(), endpointID)
+	if err != nil {
+		log.Printf("error batch-replaying events for endpoint %s: %v", endpointID, err)
+		http.Error(w, "Failed to replay the events", http.StatusInternalServerError)
+		return
+	}
+	h.broker.Publish(NudgeEventsChanged)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusAccepted)
+	_ = json.NewEncoder(w).Encode(map[string]int{"replayed": n})
+}
