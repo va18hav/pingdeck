@@ -26,9 +26,9 @@ func main() {
 		log.Fatal(err)
 	}
 	hep := api.NewEndpoint(store)
-	hwe := api.NewEvent(store)
+	broker := api.NewBroker()
+	hwe := api.NewEvent(store, broker)
 	defer store.Close()
-
 	http.HandleFunc("GET /healthz", handleHealth)
 	http.HandleFunc("GET /api/v1/endpoints", hep.List)
 	http.HandleFunc("GET /api/v1/endpoints/{id}", hep.Get)
@@ -37,11 +37,13 @@ func main() {
 	http.HandleFunc("DELETE /api/v1/endpoints/{id}", hep.Delete)
 	http.HandleFunc("POST /api/v1/endpoints/{id}/rotate-secret", hep.RotateSecret)
 	http.HandleFunc("GET /api/v1/events", hwe.List)
+	http.HandleFunc("GET /api/v1/events/stream", broker.Stream)
 	http.HandleFunc("GET /api/v1/events/{event_id}", hwe.Get)
 	http.HandleFunc("POST /api/v1/events/{event_id}/replay", hwe.Replay)
+	http.HandleFunc("POST /api/v1/endpoints/{endpoint_id}/replay", hwe.ReplayEndpoint)
 	http.HandleFunc("POST /api/v1/events/{endpoint_id}", hwe.Ingest)
 
-	wk := worker.NewWorker(store)
+	wk := worker.NewWorker(store, broker)
 	go wk.Start(ctx)
 	fmt.Println("PingDeck listening on :8080")
 	err = http.ListenAndServe(":8080", api.WithCORS(http.DefaultServeMux))
