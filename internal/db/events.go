@@ -181,3 +181,33 @@ func ReplayEventString() string {
 	RETURNING id, status, attempt_count, next_retry_at
 	`
 }
+
+func (s *Store) ReplayEndpointEvents(ctx context.Context, endpointID string) (int, error) {
+	rows, err := s.pool.Query(ctx, ReplayEndpointString(), endpointID)
+	if err != nil {
+		return 0, err
+	}
+	defer rows.Close()
+	count := 0
+	for rows.Next() {
+		var we WebhookEvent
+		if err := rows.Scan(&we.ID, &we.Status, &we.AttemptCount, &we.NextRetryAt); err != nil {
+			return 0, err
+		}
+		count++
+	}
+	return count, nil
+}
+
+func ReplayEndpointString() string {
+	return `
+	UPDATE webhook_events
+	SET status = 'PENDING',
+	    attempt_count = 0,
+	    next_retry_at = NOW(),
+	    updated_at = NOW(),
+	    locked_at = NULL
+	WHERE endpoint_id = $1 AND status IN ('FAILED')
+	RETURNING id, status, attempt_count, next_retry_at
+	`
+}
