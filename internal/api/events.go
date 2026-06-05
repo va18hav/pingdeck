@@ -9,11 +9,16 @@ import (
 	"pingdeck/internal/ingest"
 )
 
+// NudgeEventsChanged is the only SSE frame type: "refetch now", no payload.
+const NudgeEventsChanged = `{"type":"events_changed"}`
 type EventHandler struct {
 	store *db.Store
 }
 
-func NewEvent(store *db.Store) *EventHandler {
+func NewEvent(store *db.Store, broker *Broker) *EventHandler {
+	return &EventHandler{store: store, broker: broker}
+}
+func newEventLegacy(store *db.Store) *EventHandler {
 	return &EventHandler{store: store}
 }
 
