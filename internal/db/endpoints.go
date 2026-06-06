@@ -103,6 +103,9 @@ func (s *Store) ListEndpoints(ctx context.Context) ([]Endpoint, error) {
 		}
 		endpoints = append(endpoints, ep)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	return endpoints, nil
 }
 
