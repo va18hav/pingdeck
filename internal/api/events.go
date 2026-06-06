@@ -26,6 +26,10 @@ func (h *EventHandler) Ingest(w http.ResponseWriter, r *http.Request) {
 	EndpointID := r.PathValue("endpoint_id")
 	ep, err := h.store.GetEndpoint(r.Context(), EndpointID)
 	if err != nil {
+		if errors.Is(err, db.ErrNotFound) {
+			http.Error(w, "Endpoint not found", http.StatusNotFound)
+			return
+		}
 		http.Error(w, "Failed to process the event", http.StatusInternalServerError)
 		return
 	}
