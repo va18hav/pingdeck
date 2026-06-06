@@ -22,7 +22,11 @@ func nextStatus(ep *db.Endpoint, ev *db.WebhookEvent) db.Status {
 
 // backoffDelay returns the retry delay for attempt N: exponential 2^attempt seconds.
 func backoffDelay(attempt int) time.Duration {
-	return time.Duration(1<<attempt) * time.Second
+	d := time.Duration(1<<attempt) * time.Second
+	if d > time.Hour {
+		return time.Hour
+	}
+	return d
 }
 
 // Deliver performs one outbound attempt against the endpoint's target URL.
