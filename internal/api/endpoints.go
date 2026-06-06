@@ -153,3 +153,12 @@ func (h *EndpointHandler) RotateSecret(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_ = json.NewEncoder(w).Encode(map[string]string{"SigningSecret": newSecret})
 }
+
+// maskSigningSecret turns `whsec_<64 hex chars>` into `whsec_9cef…88f7`.
+func maskSigningSecret(secret string) string {
+	const prefix = "whsec_"
+	if len(secret) < len(prefix)+8 {
+		return prefix + "****"
+	}
+	return secret[:len(prefix)+4] + "…" + secret[len(secret)-4:]
+}
