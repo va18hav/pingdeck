@@ -3,6 +3,8 @@ package db
 import (
 	"context"
 	"time"
+	"errors"
+	"github.com/jackc/pgx/v5"
 )
 
 // Endpoint mirrors one row of the endpoints table.
@@ -26,6 +28,9 @@ func (s *Store) CreateEndpoint(ctx context.Context, e *Endpoint) (*Endpoint, err
 	row := s.pool.QueryRow(ctx, sql, e.Name, e.TargetURL, e.Provider, e.InboundSecret, e.SigningSecret, e.MaxRetries, e.TimeoutMS, e.SlackWebhookURL)
 	err := row.Scan(&e.ID, &e.CreatedAt, &e.UpdatedAt)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrNotFound
+		}
 		return nil, err
 	}
 	return e, nil
@@ -35,6 +40,9 @@ func (s *Store) ListEndpoints(ctx context.Context) ([]Endpoint, error) {
 	sql := ListEndpointsString()
 	rows, err := s.pool.Query(ctx, sql)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrNotFound
+		}
 		return nil, err
 	}
 	endpoints := []Endpoint{}
@@ -81,6 +89,9 @@ func (s *Store) GetEndpoint(ctx context.Context, EndpointID string) (*Endpoint, 
 		&ep.UpdatedAt,
 	)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrNotFound
+		}
 		return nil, err
 	}
 	return &ep, nil
@@ -102,6 +113,9 @@ func (s *Store) UpdateEndpoint(ctx context.Context, e *Endpoint) (*Endpoint, err
 		&ep.IsActive, &ep.CreatedAt, &ep.UpdatedAt,
 	)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrNotFound
+		}
 		return nil, err
 	}
 	return &ep, nil
