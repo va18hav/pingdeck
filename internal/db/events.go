@@ -127,6 +127,7 @@ func ListEventsString() string {
 	FROM webhook_events
 	WHERE ($1::uuid IS NULL OR endpoint_id = $1::uuid)
 	  AND ($2::event_status IS NULL OR status = $2::event_status)
+	  AND ($4::timestamptz IS NULL OR (created_at, id) < ($4::timestamptz, $5::uuid))
 	ORDER BY created_at DESC, id DESC
 	LIMIT $3
 	`
