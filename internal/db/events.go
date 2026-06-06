@@ -4,6 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"time"
+	"errors"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 // Status mirrors the event_status enum in Postgres.
@@ -37,6 +40,13 @@ func (s *Store) CreateEvent(ctx context.Context, w *WebhookEvent) (*WebhookEvent
 	sql := InsertEventString()
 	row := s.pool.QueryRow(ctx, sql, w.EndpointID, w.Headers, w.RawBody, w.ContentType)
 	err := row.Scan(&w.ID, &w.Status, &w.AttemptCount, &w.NextRetryAt, &w.CreatedAt, &w.UpdatedAt)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23503" {
+			return nil, ErrNotFound
+		}
+		return nil, err
+	}
 	if err != nil {
 		return nil, err
 	}
