@@ -176,3 +176,15 @@ func maskSigningSecret(secret string) string {
 	}
 	return secret[:len(prefix)+4] + "…" + secret[len(secret)-4:]
 }
+
+func validateEndpoint(req *CreateEndpointRequest) string {
+	switch req.Provider {
+	case "", "stripe", "github", "custom", "shopify", "woocommerce", "razorpay", "sentry", "slack":
+	default:
+		return "provider must be one of: '', 'stripe', 'github', 'custom', 'shopify', 'woocommerce', 'razorpay', 'sentry', 'slack'"
+	}
+	if req.Provider != "" && req.InboundSecret == "" {
+		return "inbound_secret is required when provider is set"
+	}
+	return ""
+}
