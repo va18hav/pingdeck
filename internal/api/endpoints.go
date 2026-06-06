@@ -15,6 +15,20 @@ type EndpointHandler struct {
 	store *db.Store
 }
 
+type EndpointResponse struct {
+	ID                  string
+	Name                string
+	TargetURL           string
+	Provider            string
+	InboundSecret       string
+	SigningSecretMasked string
+	MaxRetries          int
+	TimeoutMS           int
+	SlackWebhookURL     string
+	IsActive            bool
+	CreatedAt           string
+}
+
 type CreateEndpointRequest struct {
 	Name            string `json:"name"`
 	TargetURL       string `json:"target_url"`
