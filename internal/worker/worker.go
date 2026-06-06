@@ -35,7 +35,9 @@ func (w *Worker) Start(ctx context.Context) {
 				continue
 			}
 			fmt.Println("Worker claimed", len(events), "events")
-			w.broker.Publish(api.NudgeEventsChanged)
+			if len(events) > 0 {
+				w.broker.Publish(api.NudgeEventsChanged)
+			}
 			for _, ev := range events {
 				if err := w.Deliver(ctx, &ev); err != nil {
 					log.Println("dispatch failed", err)
