@@ -67,19 +67,19 @@ func (s *Store) ClaimDueEvents(ctx context.Context, limit int) ([]WebhookEvent, 
 	if err != nil {
 		return nil, err
 	}
-	due_events := []WebhookEvent{}
+	dueEvents := []WebhookEvent{}
 	defer rows.Close()
 	for rows.Next() {
 		var we WebhookEvent
 		if err := rows.Scan(&we.ID, &we.EndpointID, &we.Headers, &we.RawBody, &we.ContentType, &we.AttemptCount); err != nil {
 			return nil, err
 		}
-		due_events = append(due_events, we)
+		dueEvents = append(dueEvents, we)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-	return due_events, nil
+	return dueEvents, nil
 }
 
 // ListEvents filters with NULL-swap params and paginates by the
