@@ -109,6 +109,10 @@ func (h *EndpointHandler) Get(w http.ResponseWriter, r *http.Request) {
 	EndpointID := r.PathValue("id")
 	endpoint, err := h.store.GetEndpoint(r.Context(), EndpointID)
 	if err != nil {
+		if errors.Is(err, db.ErrNotFound) {
+			http.Error(w, "Endpoint not found", http.StatusNotFound)
+			return
+		}
 		log.Printf("error fetching endpoint: %v", err)
 		http.Error(w, "Failed to fetch endpoint", http.StatusInternalServerError)
 		return
