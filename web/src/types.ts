@@ -66,3 +66,54 @@ export type UpdateEndpointInput = CreateEndpointInput
 
 export interface RotateSecretResponse {
   SigningSecret: string
+}
+
+
+
+export type EventStatus =
+  | "PENDING"
+  | "PROCESSING"
+  | "DELIVERED"
+  | "RETRYING"
+  | "FAILED"
+
+
+export interface WebhookEvent {
+  ID: string
+  EndpointID: string
+  Headers: Record<string, string>
+  RawBody: string
+  ContentType: string
+  Status: EventStatus
+  AttemptCount: number
+  NextRetryAt: string
+  LockedAt: string
+  CreatedAt: string
+  UpdatedAt: string
+}
+
+
+export interface EventWithAttempts {
+  event: WebhookEvent
+  attempts: DeliveryAttempt[]
+}
+
+
+// Cursor for the keyset pagination: rows strictly older than (before, beforeId).
+export interface Cursor {
+  before: string
+  beforeId: string
+}
+
+
+export interface DeliveryAttempt {
+  id: string
+  event_id: string
+  attempt_number: number
+  response_status: number | null 
+  response_headers: Record<string, string> | null
+  response_body: string | null
+  execution_time_ms: number
+  error_message: string | null
+  attempted_at: string
+}
