@@ -56,3 +56,25 @@ export function useEvent(id: string | null) {
     enabled: id !== null,
   })
 }
+
+
+export function useReplay(eventId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () => replayEvent(eventId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["events"] })
+    },
+  })
+}
+
+
+export function useReplayEndpoint(endpointId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () => replayEndpointEvents(endpointId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["events"] })
+    },
+  })
+}
