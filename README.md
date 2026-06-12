@@ -49,7 +49,7 @@ PingDeck sits between external webhook providers (Stripe, GitHub, Slack, Shopify
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-username/pingdeck.git
+git clone https://github.com/va18hav/pingdeck.git
 cd pingdeck
 
 # 2. Start PostgreSQL 17 (the only container)
@@ -63,3 +63,24 @@ cd web && pnpm install && pnpm dev
 ```
 
 Once running:
+* **Replay Deck UI:** `http://localhost:5173`
+* **Control API:** `http://localhost:8080`
+* **Webhook ingestion URL:** `http://localhost:8080/api/v1/events/:endpoint_id`
+
+## Try It
+
+Create an endpoint in the UI, then replay a fake provider webhook with `curl`:
+
+```bash
+curl -X POST localhost:8080/api/v1/events/<endpoint_id> \
+  -H 'Content-Type: application/json' \
+  -d '{"amount": 2500, "currency": "inr"}'
+```
+
+## Configuration
+
+Dev database settings are hardcoded in `internal/config/config.go` (user `pingdeck`, password `pingdeck_password`, `localhost:5432/pingdeck`) and match `docker-compose.yml` — edit there if your Postgres differs. Env-driven configuration is a planned polish item.
+
+---
+
+More detail lives in `docs/ARCHITECTURE.md` (data flow, signature schemes, SSE design) and `docs/SCHEMA.md` (tables).
