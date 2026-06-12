@@ -53,3 +53,41 @@ disables verification.
 
 The timestamp is inside the MAC, so a receiver checking freshness knows it wasn't edited.
 
+```js
+// Verifying on your server (Node, ~6 lines)
+const [t, v1] = req.headers["x-pingdeck-signature"].replace("t=", "").split(",v1=")
+if (Math.abs(Date.now() / 1000 - Number(t)) > 300) throw new Error("stale signature")
+const expected = createHmac("sha256", process.env.PINGDECK_SIGNING_SECRET)
+  .update(`${t}.${rawBody}`).digest("hex")
+if (!timingSafeEqual(Buffer.from(expected), Buffer.from(v1))) throw new Error("bad signature")
+```
+
+## Live Updates (SSE)
+
+`GET /api/v1/events/stream` holds one HTTP response open per browser tab (built-in
+`EventSource`). The frames are **nudge-only** — `data: {"type":"events_changed"}\n\n`,
+a "refetch now" signal; real state always lives in PostgreSQL and the client refetches.
+Publishers are the four code paths that change event state (Ingest, worker claim,
+worker `record`, Replay) — all in one process, so the broker (`internal/api/stream.go`)
+is in-memory: publishes go into a small buffer and a slow tab's nudge is dropped,
+never waited on. Heartbeat comments (`: ping`) every 15 s keep proxies from reaping
+idle connections. Multiple instances later → swap publishes for Postgres
+`LISTEN/NOTIFY`; everything else stays identical.
+
+## Components
+
+| Package | Role |
+|---|---|
+| `internal/db` | `pgxpool`, runs `migrations/001_init.sql` at startup, plain-SQL query functions. See `docs/SCHEMA.md`. |
+| `internal/ingest` | Verifies the provider signature *before* inserting (`verify.go` + one `verify_<provider>.go` each), stores the raw body unparsed (parsing would break HMAC) as `PENDING`. |
+| `internal/worker` | Polls due events with `FOR UPDATE SKIP LOCKED`, delivers with a fresh signature, logs one attempt row per try, schedules the next. |
+| `internal/api` | REST: endpoint CRUD (`PUT` full update, `DELETE` cascade, `rotate-secret`), event inspection, manual replay (`POST /events/{event_id}/replay`, `POST /endpoints/{endpoint_id}/replay`), SSE stream + CORS middleware. |
+| `web/` | React 19 + Vite SPA — the Replay Deck UI. |
+
+## Retries
+
+- `max_retries` counts **all** attempts including the first; each attempt gets one row.
+- Backoff: exponential `2^attempt` seconds (1s, 2s, 4s… capped at 1 h).
+- `2xx` within `timeout_ms` → `DELIVERED`; otherwise retry until `attempt_count` hits
+  `max_retries` → `FAILED`. The per-endpoint Slack webhook URL is stored but alert
+  sending is not wired yet (planned).
