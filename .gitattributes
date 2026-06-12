@@ -1,0 +1,2 @@
+# Exclude SVG-heavy modal/panel components from GitHub Linguist byte count
+web/src/features/endpoints/components/*.tsx linguist-generated=true
