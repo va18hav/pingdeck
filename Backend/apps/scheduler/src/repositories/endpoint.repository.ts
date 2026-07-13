@@ -60,3 +60,11 @@ export const updateEndpointRepeatKey = async (id: string, repeatJobKey: string |
         data: { repeatJobKey }
     });
 };
+
+export const findEndpointResponses = async (endpointId: string, take: number = 50) => {
+    return await prisma.response.findMany({
+        where: { endpointId },
+        orderBy: { createdAt: 'desc' },
+        take
+    });
+};

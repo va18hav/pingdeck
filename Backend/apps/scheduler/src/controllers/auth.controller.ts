@@ -1,105 +1,57 @@
-import { Request, Response, NextFunction } from 'express';
-import { prisma } from 'db';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import { Request, Response } from 'express';
 import { registerSchema, loginSchema } from '../types/validation.types.js';
+import * as authService from '../services/auth.service.js';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-key-123';
+export const register = async (req: Request, res: Response) => {
+    const { email, password } = registerSchema.parse(req.body);
 
-export const register = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { email, password } = registerSchema.parse(req.body);
+    const { user, token } = await authService.registerUser(email, password);
 
-        const existingUser = await prisma.user.findUnique({ where: { email } });
-        if (existingUser) {
-            res.status(400).json({ success: false, message: 'User already exists' });
-            return;
-        }
+    res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 24 * 60 * 60 * 1000 // 1 day
+    });
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const user = await prisma.user.create({
-            data: {
-                email,
-                password: hashedPassword
-            },
-            select: {
-                id: true,
-                email: true,
-                createdAt: true
-            }
-        });
-
-        const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1d' });
-
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 24 * 60 * 60 * 1000 // 1 day
-        });
-
-        res.status(201).json({ 
-            success: true, 
-            message: 'User registered successfully', 
-            data: { id: user.id, email: user.email } 
-        });
-    } catch (err) {
-        next(err);
-    }
+    res.status(201).json({
+        success: true,
+        message: 'User registered successfully',
+        data: user
+    });
 };
 
-export const login = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { email, password } = loginSchema.parse(req.body);
+export const login = async (req: Request, res: Response) => {
+    const { email, password } = loginSchema.parse(req.body);
 
-        const user = await prisma.user.findUnique({ where: { email } });
-        if (!user) {
-            res.status(400).json({ success: false, message: 'Invalid credentials' });
-            return;
-        }
+    const { user, token } = await authService.loginUser(email, password);
 
-        const isValidPassword = await bcrypt.compare(password, user.password);
-        if (!isValidPassword) {
-            res.status(400).json({ success: false, message: 'Invalid credentials' });
-            return;
-        }
+    res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 24 * 60 * 60 * 1000 // 1 day
+    });
 
-        const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1d' });
-
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 24 * 60 * 60 * 1000 // 1 day
-        });
-
-        res.status(200).json({
-            success: true,
-            message: 'Logged in successfully',
-            data: { id: user.id, email: user.email }
-        });
-    } catch (err) {
-        next(err);
-    }
+    res.status(200).json({
+        success: true,
+        message: 'Logged in successfully',
+        data: user
+    });
 };
 
-export const logout = async (req: Request, res: Response, next: NextFunction) => {
+export const logout = async (req: Request, res: Response) => {
     res.clearCookie('token');
     res.status(200).json({ success: true, message: 'Logged out successfully' });
 };
 
-export const getMe = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        if (!req.userId) {
-            res.status(401).json({ success: false, message: 'Unauthorized' });
-            return;
-        }
-        const user = await prisma.user.findUnique({
-            where: { id: req.userId },
-            select: { id: true, email: true, createdAt: true }
-        });
-        res.status(200).json({ success: true, data: user });
-    } catch (err) {
-        next(err);
+export const getMe = async (req: Request, res: Response) => {
+    if (!req.userId) {
+        res.status(401).json({ success: false, message: 'Unauthorized' });
+        return;
     }
+
+    const user = await authService.getUserById(req.userId);
+
+    res.status(200).json({ success: true, data: user });
 };

@@ -1,30 +1,24 @@
 import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 import { executeJob } from './execution.service.js';
 import { createResponse } from '../repositories/response.repository.js';
-import { prisma } from 'db';
+import * as endpointRepo from '../repositories/endpoint.repository.js';
 import { jobQueue } from '../lib/queue.js';
 
-// 1. Decoupled module mocks for external infrastructure dependencies
-jest.mock('db', () => ({
-    prisma: {
-        endpoint: {
-            findUnique: jest.fn(),
-            update: jest.fn()
-        }
-    }
+jest.mock('../repositories/endpoint.repository.js', () => ({
+    getEndpointForPing: jest.fn(),
+    updateEndpointStatus: jest.fn()
 }));
 
-jest.mock('../repositories/response.repository', () => ({
+jest.mock('../repositories/response.repository.js', () => ({
     createResponse: jest.fn()
 }));
 
-jest.mock('../lib/queue', () => ({
+jest.mock('../lib/queue.js', () => ({
     jobQueue: {
         add: jest.fn()
     }
 }));
 
-// Mock the global fetch function
 const mockFetch = jest.fn() as jest.MockedFunction<typeof fetch>;
 global.fetch = mockFetch;
 
@@ -65,8 +59,7 @@ describe('Worker Execution Service - Uptime Health Checks', () => {
     });
 
     it('should complete check successfully, update status to UP, and log response', async () => {
-        // Arrange
-        (prisma.endpoint.findUnique as any).mockResolvedValue(mockEndpointDbRecord);
+        (endpointRepo.getEndpointForPing as any).mockResolvedValue(mockEndpointDbRecord);
         
         mockFetch.mockResolvedValue({
             ok: true,
@@ -74,16 +67,10 @@ describe('Worker Execution Service - Uptime Health Checks', () => {
             headers: new Headers(),
         } as Response);
 
-        // Act
         await executeJob(mockJob);
 
-        // Assert: Endpoint config queried
-        expect(prisma.endpoint.findUnique).toHaveBeenCalledWith({
-            where: { id: 'endpoint-456' },
-            include: expect.any(Object)
-        });
+        expect(endpointRepo.getEndpointForPing).toHaveBeenCalledWith('endpoint-456');
 
-        // Assert: Fetch request targeted the correct URL and method
         expect(mockFetch).toHaveBeenCalledWith('https://auth.company.com/health', {
             method: 'GET',
             signal: expect.any(AbortSignal),
@@ -92,7 +79,6 @@ describe('Worker Execution Service - Uptime Health Checks', () => {
             }
         });
 
-        // Assert: Log response saved in DB
         expect(createResponse).toHaveBeenCalledWith({
             endpointId: 'endpoint-456',
             statusCode: 200,
@@ -101,19 +87,12 @@ describe('Worker Execution Service - Uptime Health Checks', () => {
             error: null
         });
 
-        // Assert: Endpoint status updated in Postgres
-        expect(prisma.endpoint.update).toHaveBeenCalledWith({
-            where: { id: 'endpoint-456' },
-            data: { status: 'UP' }
-        });
-
-        // Assert: No failure email alert enqueued
+        expect(endpointRepo.updateEndpointStatus).toHaveBeenCalledWith('endpoint-456', 'UP');
         expect(jobQueue.add).not.toHaveBeenCalled();
     });
 
     it('should log status as DOWN and enqueue email alert job if target returns HTTP error status', async () => {
-        // Arrange
-        (prisma.endpoint.findUnique as any).mockResolvedValue(mockEndpointDbRecord);
+        (endpointRepo.getEndpointForPing as any).mockResolvedValue(mockEndpointDbRecord);
         
         mockFetch.mockResolvedValue({
             ok: false,
@@ -121,10 +100,8 @@ describe('Worker Execution Service - Uptime Health Checks', () => {
             headers: new Headers(),
         } as Response);
 
-        // Act
         await executeJob(mockJob);
 
-        // Assert: Response log saved as DOWN with status code error
         expect(createResponse).toHaveBeenCalledWith({
             endpointId: 'endpoint-456',
             statusCode: 503,
@@ -133,13 +110,8 @@ describe('Worker Execution Service - Uptime Health Checks', () => {
             error: 'HTTP Error Status: 503'
         });
 
-        // Assert: Status set to DOWN
-        expect(prisma.endpoint.update).toHaveBeenCalledWith({
-            where: { id: 'endpoint-456' },
-            data: { status: 'DOWN' }
-        });
+        expect(endpointRepo.updateEndpointStatus).toHaveBeenCalledWith('endpoint-456', 'DOWN');
 
-        // Assert: Email alert enqueued in background job queue
         expect(jobQueue.add).toHaveBeenCalledWith('send_email', {
             to: 'dev-ops@company.com',
             subject: '⚠️ Alert: Monitor DOWN - https://auth.company.com/health',
@@ -149,16 +121,11 @@ describe('Worker Execution Service - Uptime Health Checks', () => {
     });
 
     it('should mark status as DOWN and enqueue email alert on request network timeout', async () => {
-        // Arrange
-        (prisma.endpoint.findUnique as any).mockResolvedValue(mockEndpointDbRecord);
-        
-        // Simulate abort/timeout exception
+        (endpointRepo.getEndpointForPing as any).mockResolvedValue(mockEndpointDbRecord);
         mockFetch.mockRejectedValue(new DOMException('The user aborted a request.', 'AbortError'));
 
-        // Act
         await executeJob(mockJob);
 
-        // Assert: Log response saved as DOWN with DOM timeout exception text
         expect(createResponse).toHaveBeenCalledWith({
             endpointId: 'endpoint-456',
             statusCode: null,
@@ -167,12 +134,8 @@ describe('Worker Execution Service - Uptime Health Checks', () => {
             error: 'The user aborted a request.'
         });
 
-        expect(prisma.endpoint.update).toHaveBeenCalledWith({
-            where: { id: 'endpoint-456' },
-            data: { status: 'DOWN' }
-        });
+        expect(endpointRepo.updateEndpointStatus).toHaveBeenCalledWith('endpoint-456', 'DOWN');
 
-        // Assert: Email alert enqueued
         expect(jobQueue.add).toHaveBeenCalledWith('send_email', {
             to: 'dev-ops@company.com',
             subject: '⚠️ Alert: Monitor DOWN - https://auth.company.com/health',
@@ -182,16 +145,13 @@ describe('Worker Execution Service - Uptime Health Checks', () => {
     });
 
     it('should skip check gracefully if endpoint configuration is not found in database', async () => {
-        // Arrange
-        (prisma.endpoint.findUnique as any).mockResolvedValue(null);
+        (endpointRepo.getEndpointForPing as any).mockResolvedValue(null);
 
-        // Act
         await executeJob(mockJob);
 
-        // Assert: Verify execution skipped
         expect(mockFetch).not.toHaveBeenCalled();
         expect(createResponse).not.toHaveBeenCalled();
-        expect(prisma.endpoint.update).not.toHaveBeenCalled();
+        expect(endpointRepo.updateEndpointStatus).not.toHaveBeenCalled();
         expect(jobQueue.add).not.toHaveBeenCalled();
     });
 });

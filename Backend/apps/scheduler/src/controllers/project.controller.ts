@@ -1,69 +1,25 @@
-import { Request, Response, NextFunction } from 'express';
-import * as projectRepo from '../repositories/project.repository.js';
+import { Request, Response } from 'express';
 import { createProjectSchema } from '../types/validation.types.js';
+import * as projectService from '../services/project.service.js';
 
-export const createProject = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { name, description } = createProjectSchema.parse(req.body);
-        const userId = req.userId;
+export const createProject = async (req: Request, res: Response) => {
+    const data = createProjectSchema.parse(req.body);
+    if (!req.userId) return res.status(401).json({ success: false, message: 'Unauthorized' });
 
-        if (!userId) {
-            res.status(401).json({ success: false, message: 'Unauthorized' });
-            return;
-        }
-
-        const project = await projectRepo.createProject({
-            name,
-            description: description ?? undefined,
-            userId
-        });
-
-        res.status(201).json({ success: true, data: project });
-    } catch (err) {
-        next(err);
-    }
+    const project = await projectService.createProject(req.userId, data);
+    res.status(201).json({ success: true, data: project });
 };
 
-export const getUserProjects = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const userId = req.userId;
+export const getUserProjects = async (req: Request, res: Response) => {
+    if (!req.userId) return res.status(401).json({ success: false, message: 'Unauthorized' });
 
-        if (!userId) {
-            res.status(401).json({ success: false, message: 'Unauthorized' });
-            return;
-        }
-
-        const projects = await projectRepo.findProjectsByUser(userId);
-        res.status(200).json({ success: true, data: projects });
-    } catch (err) {
-        next(err);
-    }
+    const projects = await projectService.getUserProjects(req.userId);
+    res.status(200).json({ success: true, data: projects });
 };
 
-export const deleteProject = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { id } = req.params;
-        const userId = req.userId;
+export const deleteProject = async (req: Request, res: Response) => {
+    if (!req.userId) return res.status(401).json({ success: false, message: 'Unauthorized' });
 
-        if (!userId) {
-            res.status(401).json({ success: false, message: 'Unauthorized' });
-            return;
-        }
-
-        const project = await projectRepo.findProjectById(id as string);
-        if (!project) {
-            res.status(404).json({ success: false, message: 'Project not found' });
-            return;
-        }
-
-        if (project.userId !== userId) {
-            res.status(403).json({ success: false, message: 'Forbidden' });
-            return;
-        }
-
-        await projectRepo.deleteProject(id as string);
-        res.status(200).json({ success: true, message: 'Project deleted successfully' });
-    } catch (err) {
-        next(err);
-    }
+    await projectService.deleteProject(req.userId, req.params.id as string);
+    res.status(200).json({ success: true, message: 'Project deleted successfully' });
 };
