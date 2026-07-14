@@ -53,12 +53,12 @@ export const removeScheduledJob = async (key: string) => {
     return await jobQueue.removeRepeatableByKey(key);
 }
 
-export const syncDatabaseEndpointsWithQueue = async () => {
-    const endpoints = await prisma.endpoint.findMany({
+export const syncDatabaseMonitorsWithQueue = async () => {
+    const monitors = await prisma.monitor.findMany({
         include: {
-            project: {
-                select: {
-                    userId: true
+            endpoint: {
+                include: {
+                    project: { select: { userId: true } }
                 }
             }
         }
@@ -67,27 +67,66 @@ export const syncDatabaseEndpointsWithQueue = async () => {
     const repeatableJobs = await jobQueue.getRepeatableJobs();
     const repeatableKeys = new Set(repeatableJobs.map(job => job.key));
 
-    for (const endpoint of endpoints) {
-        if (!endpoint.repeatJobKey || !repeatableKeys.has(endpoint.repeatJobKey)) {
+    for (const monitor of monitors) {
+        if (!monitor.repeatJobKey || !repeatableKeys.has(monitor.repeatJobKey)) {
             try {
-                // If it was already in Redis under the old format or missing, reschedule it
                 const scheduledJob = await addScheduledJob({
                     type: 'ping_endpoint',
-                    payload: { endpointId: endpoint.id },
+                    payload: { endpointId: monitor.endpointId, monitorId: monitor.id },
                     schedule: 'every-x-minutes',
-                    minutes: endpoint.interval,
-                    userId: endpoint.project.userId
+                    minutes: monitor.interval,
+                    userId: monitor.endpoint.project.userId
                 });
 
                 if (scheduledJob && scheduledJob.repeatJobKey) {
-                    await prisma.endpoint.update({
-                        where: { id: endpoint.id },
+                    await prisma.monitor.update({
+                        where: { id: monitor.id },
                         data: { repeatJobKey: scheduledJob.repeatJobKey }
                     });
                 }
             } catch (err) {
-                console.error(`Failed to synchronize endpoint ${endpoint.id}:`, err);
+                console.error(`Failed to synchronize monitor ${monitor.id}:`, err);
             }
         }
     }
+};
+
+import * as monitorRepo from '../repositories/monitor.repository.js';
+import * as endpointRepo from '../repositories/endpoint.repository.js';
+import { AppError } from '../lib/appError.js';
+
+export const createMonitor = async (userId: string, data: { endpointId: string; interval: number }) => {
+    const endpoint = await endpointRepo.findEndpointById(data.endpointId);
+    if (!endpoint) throw new AppError(404, 'Endpoint not found');
+    if (endpoint.project.userId !== userId) throw new AppError(403, 'Forbidden');
+
+    const monitor = await monitorRepo.createMonitor(data);
+
+    const scheduledJob = await addScheduledJob({
+        type: 'ping_endpoint',
+        payload: { endpointId: endpoint.id, monitorId: monitor.id },
+        schedule: 'every-x-minutes',
+        minutes: data.interval,
+        userId
+    });
+
+    let repeatKey: string | null = null;
+    if (scheduledJob && scheduledJob.repeatJobKey) {
+        repeatKey = scheduledJob.repeatJobKey;
+        await monitorRepo.updateMonitorRepeatKey(monitor.id, repeatKey);
+    }
+
+    return { ...monitor, repeatJobKey: repeatKey };
+};
+
+export const deleteMonitor = async (userId: string, monitorId: string) => {
+    const monitor = await monitorRepo.findMonitorById(monitorId);
+    if (!monitor) throw new AppError(404, 'Monitor not found');
+    if (monitor.endpoint.project.userId !== userId) throw new AppError(403, 'Forbidden');
+
+    if (monitor.repeatJobKey) {
+        await removeScheduledJob(monitor.repeatJobKey);
+    }
+
+    await monitorRepo.deleteMonitor(monitorId);
 };

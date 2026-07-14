@@ -33,6 +33,16 @@ export type Project = Prisma.ProjectModel
  */
 export type Endpoint = Prisma.EndpointModel
 /**
+ * Model Monitor
+ * 
+ */
+export type Monitor = Prisma.MonitorModel
+/**
+ * Model Folder
+ * 
+ */
+export type Folder = Prisma.FolderModel
+/**
  * Model Response
  * 
  */

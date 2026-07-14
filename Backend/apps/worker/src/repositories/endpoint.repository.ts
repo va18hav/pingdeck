@@ -13,9 +13,3 @@ export const getEndpointForPing = async (id: string) => {
     });
 };
 
-export const updateEndpointStatus = async (id: string, status: string) => {
-    return await prisma.endpoint.update({
-        where: { id },
-        data: { status }
-    });
-};

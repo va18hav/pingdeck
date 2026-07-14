@@ -15,6 +15,8 @@ export interface MonitorResponse {
     statusCode: number | null;
     responseTime: number | null;
     status: 'UP' | 'DOWN';
+    responseBody?: string | null;
+    responseHeaders?: any | null;
     error: string | null;
     createdAt: string;
 }

@@ -192,6 +192,7 @@ export type ProjectWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   endpoints?: Prisma.EndpointListRelationFilter
+  folders?: Prisma.FolderListRelationFilter
 }
 
 export type ProjectOrderByWithRelationInput = {
@@ -203,6 +204,7 @@ export type ProjectOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   endpoints?: Prisma.EndpointOrderByRelationAggregateInput
+  folders?: Prisma.FolderOrderByRelationAggregateInput
 }
 
 export type ProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -217,6 +219,7 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   endpoints?: Prisma.EndpointListRelationFilter
+  folders?: Prisma.FolderListRelationFilter
 }, "id">
 
 export type ProjectOrderByWithAggregationInput = {
@@ -251,6 +254,7 @@ export type ProjectCreateInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutProjectsInput
   endpoints?: Prisma.EndpointCreateNestedManyWithoutProjectInput
+  folders?: Prisma.FolderCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateInput = {
@@ -261,6 +265,7 @@ export type ProjectUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   endpoints?: Prisma.EndpointUncheckedCreateNestedManyWithoutProjectInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUpdateInput = {
@@ -271,6 +276,7 @@ export type ProjectUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutProjectsNestedInput
   endpoints?: Prisma.EndpointUpdateManyWithoutProjectNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateInput = {
@@ -281,6 +287,7 @@ export type ProjectUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endpoints?: Prisma.EndpointUncheckedUpdateManyWithoutProjectNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateManyInput = {
@@ -411,6 +418,20 @@ export type ProjectUpdateOneRequiredWithoutEndpointsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutEndpointsInput, Prisma.ProjectUpdateWithoutEndpointsInput>, Prisma.ProjectUncheckedUpdateWithoutEndpointsInput>
 }
 
+export type ProjectCreateNestedOneWithoutFoldersInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutFoldersInput, Prisma.ProjectUncheckedCreateWithoutFoldersInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutFoldersInput
+  connect?: Prisma.ProjectWhereUniqueInput
+}
+
+export type ProjectUpdateOneRequiredWithoutFoldersNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutFoldersInput, Prisma.ProjectUncheckedCreateWithoutFoldersInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutFoldersInput
+  upsert?: Prisma.ProjectUpsertWithoutFoldersInput
+  connect?: Prisma.ProjectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutFoldersInput, Prisma.ProjectUpdateWithoutFoldersInput>, Prisma.ProjectUncheckedUpdateWithoutFoldersInput>
+}
+
 export type ProjectCreateWithoutUserInput = {
   id?: string
   name: string
@@ -418,6 +439,7 @@ export type ProjectCreateWithoutUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   endpoints?: Prisma.EndpointCreateNestedManyWithoutProjectInput
+  folders?: Prisma.FolderCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutUserInput = {
@@ -427,6 +449,7 @@ export type ProjectUncheckedCreateWithoutUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   endpoints?: Prisma.EndpointUncheckedCreateNestedManyWithoutProjectInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutUserInput = {
@@ -474,6 +497,7 @@ export type ProjectCreateWithoutEndpointsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutProjectsInput
+  folders?: Prisma.FolderCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutEndpointsInput = {
@@ -483,6 +507,7 @@ export type ProjectUncheckedCreateWithoutEndpointsInput = {
   userId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutEndpointsInput = {
@@ -508,6 +533,7 @@ export type ProjectUpdateWithoutEndpointsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutProjectsNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutEndpointsInput = {
@@ -517,6 +543,63 @@ export type ProjectUncheckedUpdateWithoutEndpointsInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectCreateWithoutFoldersInput = {
+  id?: string
+  name: string
+  description?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutProjectsInput
+  endpoints?: Prisma.EndpointCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectUncheckedCreateWithoutFoldersInput = {
+  id?: string
+  name: string
+  description?: string | null
+  userId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  endpoints?: Prisma.EndpointUncheckedCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectCreateOrConnectWithoutFoldersInput = {
+  where: Prisma.ProjectWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutFoldersInput, Prisma.ProjectUncheckedCreateWithoutFoldersInput>
+}
+
+export type ProjectUpsertWithoutFoldersInput = {
+  update: Prisma.XOR<Prisma.ProjectUpdateWithoutFoldersInput, Prisma.ProjectUncheckedUpdateWithoutFoldersInput>
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutFoldersInput, Prisma.ProjectUncheckedCreateWithoutFoldersInput>
+  where?: Prisma.ProjectWhereInput
+}
+
+export type ProjectUpdateToOneWithWhereWithoutFoldersInput = {
+  where?: Prisma.ProjectWhereInput
+  data: Prisma.XOR<Prisma.ProjectUpdateWithoutFoldersInput, Prisma.ProjectUncheckedUpdateWithoutFoldersInput>
+}
+
+export type ProjectUpdateWithoutFoldersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutProjectsNestedInput
+  endpoints?: Prisma.EndpointUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectUncheckedUpdateWithoutFoldersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endpoints?: Prisma.EndpointUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateManyUserInput = {
@@ -534,6 +617,7 @@ export type ProjectUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endpoints?: Prisma.EndpointUpdateManyWithoutProjectNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutUserInput = {
@@ -543,6 +627,7 @@ export type ProjectUncheckedUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endpoints?: Prisma.EndpointUncheckedUpdateManyWithoutProjectNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateManyWithoutUserInput = {
@@ -560,10 +645,12 @@ export type ProjectUncheckedUpdateManyWithoutUserInput = {
 
 export type ProjectCountOutputType = {
   endpoints: number
+  folders: number
 }
 
 export type ProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   endpoints?: boolean | ProjectCountOutputTypeCountEndpointsArgs
+  folders?: boolean | ProjectCountOutputTypeCountFoldersArgs
 }
 
 /**
@@ -583,6 +670,13 @@ export type ProjectCountOutputTypeCountEndpointsArgs<ExtArgs extends runtime.Typ
   where?: Prisma.EndpointWhereInput
 }
 
+/**
+ * ProjectCountOutputType without action
+ */
+export type ProjectCountOutputTypeCountFoldersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FolderWhereInput
+}
+
 
 export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -593,6 +687,7 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   endpoints?: boolean | Prisma.Project$endpointsArgs<ExtArgs>
+  folders?: boolean | Prisma.Project$foldersArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["project"]>
 
@@ -629,6 +724,7 @@ export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   endpoints?: boolean | Prisma.Project$endpointsArgs<ExtArgs>
+  folders?: boolean | Prisma.Project$foldersArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProjectIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -643,6 +739,7 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     endpoints: Prisma.$EndpointPayload<ExtArgs>[]
+    folders: Prisma.$FolderPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1047,6 +1144,7 @@ export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   endpoints<T extends Prisma.Project$endpointsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$endpointsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EndpointPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  folders<T extends Prisma.Project$foldersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$foldersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1504,6 +1602,30 @@ export type Project$endpointsArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.EndpointScalarFieldEnum | Prisma.EndpointScalarFieldEnum[]
+}
+
+/**
+ * Project.folders
+ */
+export type Project$foldersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Folder
+   */
+  select?: Prisma.FolderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Folder
+   */
+  omit?: Prisma.FolderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FolderInclude<ExtArgs> | null
+  where?: Prisma.FolderWhereInput
+  orderBy?: Prisma.FolderOrderByWithRelationInput | Prisma.FolderOrderByWithRelationInput[]
+  cursor?: Prisma.FolderWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FolderScalarFieldEnum | Prisma.FolderScalarFieldEnum[]
 }
 
 /**

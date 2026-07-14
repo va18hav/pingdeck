@@ -3,20 +3,34 @@ import { prisma } from 'db';
 export const createEndpoint = async (data: {
     name: string;
     url: string;
-    interval: number;
     projectId: string;
+    folderId?: string | null;
+    method?: string;
+    headers?: any;
+    body?: string | null;
+    queryParams?: any;
+    auth?: any;
 }) => {
     return await prisma.endpoint.create({
-        data,
+        data: {
+            ...data,
+            folderId: data.folderId ?? undefined,
+            headers: data.headers ?? undefined,
+            queryParams: data.queryParams ?? undefined,
+            auth: data.auth ?? undefined,
+            body: data.body ?? undefined
+        },
         select: {
             id: true,
             name: true,
             url: true,
             method: true,
-            interval: true,
-            status: true,
             projectId: true,
-            createdAt: true
+            createdAt: true,
+            headers: true,
+            body: true,
+            queryParams: true,
+            auth: true,
         }
     });
 };
@@ -36,6 +50,12 @@ export const findEndpointById = async (id: string) => {
                 select: {
                     userId: true
                 }
+            },
+            monitors: {
+                orderBy: {
+                    createdAt: 'desc'
+                },
+                take: 1
             }
         }
     });
@@ -47,19 +67,32 @@ export const deleteEndpoint = async (id: string) => {
     });
 };
 
-export const updateEndpointStatus = async (id: string, status: string) => {
+export const updateEndpoint = async (id: string, data: {
+    name?: string;
+    url?: string;
+    method?: string;
+    folderId?: string | null;
+    headers?: any;
+    body?: string | null;
+    queryParams?: any;
+    auth?: any;
+}) => {
     return await prisma.endpoint.update({
         where: { id },
-        data: { status }
+        data: {
+            name: data.name,
+            url: data.url,
+            method: data.method,
+            folderId: data.folderId,
+            headers: data.headers ?? undefined,
+            queryParams: data.queryParams ?? undefined,
+            auth: data.auth ?? undefined,
+            body: data.body ?? undefined
+        }
     });
 };
 
-export const updateEndpointRepeatKey = async (id: string, repeatJobKey: string | null) => {
-    return await prisma.endpoint.update({
-        where: { id },
-        data: { repeatJobKey }
-    });
-};
+
 
 export const findEndpointResponses = async (endpointId: string, take: number = 50) => {
     return await prisma.response.findMany({

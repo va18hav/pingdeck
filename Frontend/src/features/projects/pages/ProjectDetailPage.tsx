@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Trash2, Plus } from 'lucide-react';
 import { useGetProjects, useGetProjectEndpoints, useDeleteProject } from '../hooks/useProjects';
 import { EndpointsTable } from '../components/EndpointsTable';
 import { CreateEndpointModal } from '../components/CreateEndpointModal';
+import { RequestPanel } from '../components/RequestPanel';
 import { SkeletonLoader } from '../../../shared/components/SkeletonLoader';
 
 export const ProjectDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const selectedEndpointId = searchParams.get('endpointId');
     const [isEndpointModalOpen, setIsEndpointModalOpen] = useState(false);
 
     // Fetch projects to find the metadata of the current active project
@@ -31,6 +34,31 @@ export const ProjectDetailPage: React.FC = () => {
 
     if (projectsLoading || !project) {
         return <SkeletonLoader />;
+    }
+
+    // If an endpoint is selected, show the configuration workspace panel (built in Step 3)
+    if (selectedEndpointId) {
+        const activeEndpoint = endpoints?.find(e => e.id === selectedEndpointId);
+        
+        return (
+            <div className="-mt-6 h-[calc(100vh-80px)] flex flex-col overflow-hidden space-y-3 py-2 w-full">
+                <div className="flex items-center space-x-3 text-slate-400 text-xs font-semibold shrink-0">
+                    <span>Projects</span>
+                    <span>/</span>
+                    <span className="text-slate-500 font-bold">{project.name}</span>
+                    <span>/</span>
+                    <span className="text-slate-800 font-extrabold">{activeEndpoint?.name || 'Loading request...'}</span>
+                </div>
+                
+                {activeEndpoint ? (
+                    <RequestPanel endpoint={activeEndpoint} projectId={id!} />
+                ) : (
+                    <div className="flex-1 bg-white border border-slate-200 rounded-2xl flex items-center justify-center">
+                        <SkeletonLoader />
+                    </div>
+                )}
+            </div>
+        );
     }
 
     return (

@@ -74,13 +74,15 @@ export const startWorker = async () => {
 
         try {
             // Execute the check/notification
-            await executeJob(jobContext);
+            const result = await executeJob(jobContext);
 
             const duration = (Date.now() - start) / 1000;
             jobExecutionDurationSeconds.observe({ type: bullJob.name }, duration);
             jobsProcessedTotal.inc({ type: bullJob.name, status: 'completed' });
 
             logger.info({ bullJobId: bullJob.id, duration }, `Job completed successfully by worker:${workerId}`);
+            
+            return result;
         } catch (err) {
             const duration = (Date.now() - start) / 1000;
             jobExecutionDurationSeconds.observe({ type: bullJob.name }, duration);

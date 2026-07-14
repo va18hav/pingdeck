@@ -17,3 +17,40 @@ export const useGetResponses = (id: string) => {
         refetchInterval: 10000 // Poll responses every 10 seconds
     });
 };
+
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+
+export const useCreateMonitor = (projectId: string, onSuccessCb?: () => void) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: monitorService.createMonitor,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['endpoints', projectId] });
+            toast.success('Live monitor activated successfully!');
+            if (onSuccessCb) onSuccessCb();
+        },
+        onError: (err: any) => {
+            const message = err.response?.data?.message || 'Failed to activate monitor';
+            toast.error(message);
+        }
+    });
+};
+
+export const useDeleteMonitor = (projectId: string, onSuccessCb?: () => void) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: monitorService.deleteMonitor,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['endpoints', projectId] });
+            toast.success('Live monitor stopped successfully');
+            if (onSuccessCb) onSuccessCb();
+        },
+        onError: (err: any) => {
+            const message = err.response?.data?.message || 'Failed to stop monitor';
+            toast.error(message);
+        }
+    });
+};

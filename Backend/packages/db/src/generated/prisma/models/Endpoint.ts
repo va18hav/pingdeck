@@ -20,18 +20,8 @@ export type EndpointModel = runtime.Types.Result.DefaultSelection<Prisma.$Endpoi
 
 export type AggregateEndpoint = {
   _count: EndpointCountAggregateOutputType | null
-  _avg: EndpointAvgAggregateOutputType | null
-  _sum: EndpointSumAggregateOutputType | null
   _min: EndpointMinAggregateOutputType | null
   _max: EndpointMaxAggregateOutputType | null
-}
-
-export type EndpointAvgAggregateOutputType = {
-  interval: number | null
-}
-
-export type EndpointSumAggregateOutputType = {
-  interval: number | null
 }
 
 export type EndpointMinAggregateOutputType = {
@@ -39,10 +29,9 @@ export type EndpointMinAggregateOutputType = {
   name: string | null
   url: string | null
   method: string | null
-  interval: number | null
-  status: string | null
+  body: string | null
   projectId: string | null
-  repeatJobKey: string | null
+  folderId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -52,10 +41,9 @@ export type EndpointMaxAggregateOutputType = {
   name: string | null
   url: string | null
   method: string | null
-  interval: number | null
-  status: string | null
+  body: string | null
   projectId: string | null
-  repeatJobKey: string | null
+  folderId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -65,33 +53,26 @@ export type EndpointCountAggregateOutputType = {
   name: number
   url: number
   method: number
-  interval: number
-  status: number
+  headers: number
+  body: number
+  queryParams: number
+  auth: number
   projectId: number
-  repeatJobKey: number
+  folderId: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
 
-export type EndpointAvgAggregateInputType = {
-  interval?: true
-}
-
-export type EndpointSumAggregateInputType = {
-  interval?: true
-}
-
 export type EndpointMinAggregateInputType = {
   id?: true
   name?: true
   url?: true
   method?: true
-  interval?: true
-  status?: true
+  body?: true
   projectId?: true
-  repeatJobKey?: true
+  folderId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -101,10 +82,9 @@ export type EndpointMaxAggregateInputType = {
   name?: true
   url?: true
   method?: true
-  interval?: true
-  status?: true
+  body?: true
   projectId?: true
-  repeatJobKey?: true
+  folderId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -114,10 +94,12 @@ export type EndpointCountAggregateInputType = {
   name?: true
   url?: true
   method?: true
-  interval?: true
-  status?: true
+  headers?: true
+  body?: true
+  queryParams?: true
+  auth?: true
   projectId?: true
-  repeatJobKey?: true
+  folderId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -161,18 +143,6 @@ export type EndpointAggregateArgs<ExtArgs extends runtime.Types.Extensions.Inter
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
-   * Select which fields to average
-  **/
-  _avg?: EndpointAvgAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
-   * Select which fields to sum
-  **/
-  _sum?: EndpointSumAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
    * Select which fields to find the minimum value
   **/
   _min?: EndpointMinAggregateInputType
@@ -203,8 +173,6 @@ export type EndpointGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   _count?: EndpointCountAggregateInputType | true
-  _avg?: EndpointAvgAggregateInputType
-  _sum?: EndpointSumAggregateInputType
   _min?: EndpointMinAggregateInputType
   _max?: EndpointMaxAggregateInputType
 }
@@ -214,15 +182,15 @@ export type EndpointGroupByOutputType = {
   name: string
   url: string
   method: string
-  interval: number
-  status: string
+  headers: runtime.JsonValue | null
+  body: string | null
+  queryParams: runtime.JsonValue | null
+  auth: runtime.JsonValue | null
   projectId: string
-  repeatJobKey: string | null
+  folderId: string | null
   createdAt: Date
   updatedAt: Date
   _count: EndpointCountAggregateOutputType | null
-  _avg: EndpointAvgAggregateOutputType | null
-  _sum: EndpointSumAggregateOutputType | null
   _min: EndpointMinAggregateOutputType | null
   _max: EndpointMaxAggregateOutputType | null
 }
@@ -250,13 +218,17 @@ export type EndpointWhereInput = {
   name?: Prisma.StringFilter<"Endpoint"> | string
   url?: Prisma.StringFilter<"Endpoint"> | string
   method?: Prisma.StringFilter<"Endpoint"> | string
-  interval?: Prisma.IntFilter<"Endpoint"> | number
-  status?: Prisma.StringFilter<"Endpoint"> | string
+  headers?: Prisma.JsonNullableFilter<"Endpoint">
+  body?: Prisma.StringNullableFilter<"Endpoint"> | string | null
+  queryParams?: Prisma.JsonNullableFilter<"Endpoint">
+  auth?: Prisma.JsonNullableFilter<"Endpoint">
   projectId?: Prisma.StringFilter<"Endpoint"> | string
-  repeatJobKey?: Prisma.StringNullableFilter<"Endpoint"> | string | null
+  folderId?: Prisma.StringNullableFilter<"Endpoint"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Endpoint"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Endpoint"> | Date | string
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
+  folder?: Prisma.XOR<Prisma.FolderNullableScalarRelationFilter, Prisma.FolderWhereInput> | null
+  monitors?: Prisma.MonitorListRelationFilter
   responses?: Prisma.ResponseListRelationFilter
 }
 
@@ -265,13 +237,17 @@ export type EndpointOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   url?: Prisma.SortOrder
   method?: Prisma.SortOrder
-  interval?: Prisma.SortOrder
-  status?: Prisma.SortOrder
+  headers?: Prisma.SortOrderInput | Prisma.SortOrder
+  body?: Prisma.SortOrderInput | Prisma.SortOrder
+  queryParams?: Prisma.SortOrderInput | Prisma.SortOrder
+  auth?: Prisma.SortOrderInput | Prisma.SortOrder
   projectId?: Prisma.SortOrder
-  repeatJobKey?: Prisma.SortOrderInput | Prisma.SortOrder
+  folderId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   project?: Prisma.ProjectOrderByWithRelationInput
+  folder?: Prisma.FolderOrderByWithRelationInput
+  monitors?: Prisma.MonitorOrderByRelationAggregateInput
   responses?: Prisma.ResponseOrderByRelationAggregateInput
 }
 
@@ -283,13 +259,17 @@ export type EndpointWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Endpoint"> | string
   url?: Prisma.StringFilter<"Endpoint"> | string
   method?: Prisma.StringFilter<"Endpoint"> | string
-  interval?: Prisma.IntFilter<"Endpoint"> | number
-  status?: Prisma.StringFilter<"Endpoint"> | string
+  headers?: Prisma.JsonNullableFilter<"Endpoint">
+  body?: Prisma.StringNullableFilter<"Endpoint"> | string | null
+  queryParams?: Prisma.JsonNullableFilter<"Endpoint">
+  auth?: Prisma.JsonNullableFilter<"Endpoint">
   projectId?: Prisma.StringFilter<"Endpoint"> | string
-  repeatJobKey?: Prisma.StringNullableFilter<"Endpoint"> | string | null
+  folderId?: Prisma.StringNullableFilter<"Endpoint"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Endpoint"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Endpoint"> | Date | string
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
+  folder?: Prisma.XOR<Prisma.FolderNullableScalarRelationFilter, Prisma.FolderWhereInput> | null
+  monitors?: Prisma.MonitorListRelationFilter
   responses?: Prisma.ResponseListRelationFilter
 }, "id">
 
@@ -298,17 +278,17 @@ export type EndpointOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   url?: Prisma.SortOrder
   method?: Prisma.SortOrder
-  interval?: Prisma.SortOrder
-  status?: Prisma.SortOrder
+  headers?: Prisma.SortOrderInput | Prisma.SortOrder
+  body?: Prisma.SortOrderInput | Prisma.SortOrder
+  queryParams?: Prisma.SortOrderInput | Prisma.SortOrder
+  auth?: Prisma.SortOrderInput | Prisma.SortOrder
   projectId?: Prisma.SortOrder
-  repeatJobKey?: Prisma.SortOrderInput | Prisma.SortOrder
+  folderId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.EndpointCountOrderByAggregateInput
-  _avg?: Prisma.EndpointAvgOrderByAggregateInput
   _max?: Prisma.EndpointMaxOrderByAggregateInput
   _min?: Prisma.EndpointMinOrderByAggregateInput
-  _sum?: Prisma.EndpointSumOrderByAggregateInput
 }
 
 export type EndpointScalarWhereWithAggregatesInput = {
@@ -319,10 +299,12 @@ export type EndpointScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Endpoint"> | string
   url?: Prisma.StringWithAggregatesFilter<"Endpoint"> | string
   method?: Prisma.StringWithAggregatesFilter<"Endpoint"> | string
-  interval?: Prisma.IntWithAggregatesFilter<"Endpoint"> | number
-  status?: Prisma.StringWithAggregatesFilter<"Endpoint"> | string
+  headers?: Prisma.JsonNullableWithAggregatesFilter<"Endpoint">
+  body?: Prisma.StringNullableWithAggregatesFilter<"Endpoint"> | string | null
+  queryParams?: Prisma.JsonNullableWithAggregatesFilter<"Endpoint">
+  auth?: Prisma.JsonNullableWithAggregatesFilter<"Endpoint">
   projectId?: Prisma.StringWithAggregatesFilter<"Endpoint"> | string
-  repeatJobKey?: Prisma.StringNullableWithAggregatesFilter<"Endpoint"> | string | null
+  folderId?: Prisma.StringNullableWithAggregatesFilter<"Endpoint"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Endpoint"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Endpoint"> | Date | string
 }
@@ -332,12 +314,15 @@ export type EndpointCreateInput = {
   name: string
   url: string
   method?: string
-  interval: number
-  status?: string
-  repeatJobKey?: string | null
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutEndpointsInput
+  folder?: Prisma.FolderCreateNestedOneWithoutEndpointsInput
+  monitors?: Prisma.MonitorCreateNestedManyWithoutEndpointInput
   responses?: Prisma.ResponseCreateNestedManyWithoutEndpointInput
 }
 
@@ -346,12 +331,15 @@ export type EndpointUncheckedCreateInput = {
   name: string
   url: string
   method?: string
-  interval: number
-  status?: string
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   projectId: string
-  repeatJobKey?: string | null
+  folderId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  monitors?: Prisma.MonitorUncheckedCreateNestedManyWithoutEndpointInput
   responses?: Prisma.ResponseUncheckedCreateNestedManyWithoutEndpointInput
 }
 
@@ -360,12 +348,15 @@ export type EndpointUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.StringFieldUpdateOperationsInput | string
-  interval?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  repeatJobKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutEndpointsNestedInput
+  folder?: Prisma.FolderUpdateOneWithoutEndpointsNestedInput
+  monitors?: Prisma.MonitorUpdateManyWithoutEndpointNestedInput
   responses?: Prisma.ResponseUpdateManyWithoutEndpointNestedInput
 }
 
@@ -374,12 +365,15 @@ export type EndpointUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.StringFieldUpdateOperationsInput | string
-  interval?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
-  repeatJobKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  monitors?: Prisma.MonitorUncheckedUpdateManyWithoutEndpointNestedInput
   responses?: Prisma.ResponseUncheckedUpdateManyWithoutEndpointNestedInput
 }
 
@@ -388,10 +382,12 @@ export type EndpointCreateManyInput = {
   name: string
   url: string
   method?: string
-  interval: number
-  status?: string
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   projectId: string
-  repeatJobKey?: string | null
+  folderId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -401,9 +397,10 @@ export type EndpointUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.StringFieldUpdateOperationsInput | string
-  interval?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  repeatJobKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -413,10 +410,12 @@ export type EndpointUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.StringFieldUpdateOperationsInput | string
-  interval?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
-  repeatJobKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -436,16 +435,14 @@ export type EndpointCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   url?: Prisma.SortOrder
   method?: Prisma.SortOrder
-  interval?: Prisma.SortOrder
-  status?: Prisma.SortOrder
+  headers?: Prisma.SortOrder
+  body?: Prisma.SortOrder
+  queryParams?: Prisma.SortOrder
+  auth?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
-  repeatJobKey?: Prisma.SortOrder
+  folderId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-}
-
-export type EndpointAvgOrderByAggregateInput = {
-  interval?: Prisma.SortOrder
 }
 
 export type EndpointMaxOrderByAggregateInput = {
@@ -453,10 +450,9 @@ export type EndpointMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   url?: Prisma.SortOrder
   method?: Prisma.SortOrder
-  interval?: Prisma.SortOrder
-  status?: Prisma.SortOrder
+  body?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
-  repeatJobKey?: Prisma.SortOrder
+  folderId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -466,16 +462,11 @@ export type EndpointMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   url?: Prisma.SortOrder
   method?: Prisma.SortOrder
-  interval?: Prisma.SortOrder
-  status?: Prisma.SortOrder
+  body?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
-  repeatJobKey?: Prisma.SortOrder
+  folderId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-}
-
-export type EndpointSumOrderByAggregateInput = {
-  interval?: Prisma.SortOrder
 }
 
 export type EndpointScalarRelationFilter = {
@@ -525,12 +516,60 @@ export type EndpointUncheckedUpdateManyWithoutProjectNestedInput = {
   deleteMany?: Prisma.EndpointScalarWhereInput | Prisma.EndpointScalarWhereInput[]
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
+export type EndpointCreateNestedOneWithoutMonitorsInput = {
+  create?: Prisma.XOR<Prisma.EndpointCreateWithoutMonitorsInput, Prisma.EndpointUncheckedCreateWithoutMonitorsInput>
+  connectOrCreate?: Prisma.EndpointCreateOrConnectWithoutMonitorsInput
+  connect?: Prisma.EndpointWhereUniqueInput
+}
+
+export type EndpointUpdateOneRequiredWithoutMonitorsNestedInput = {
+  create?: Prisma.XOR<Prisma.EndpointCreateWithoutMonitorsInput, Prisma.EndpointUncheckedCreateWithoutMonitorsInput>
+  connectOrCreate?: Prisma.EndpointCreateOrConnectWithoutMonitorsInput
+  upsert?: Prisma.EndpointUpsertWithoutMonitorsInput
+  connect?: Prisma.EndpointWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EndpointUpdateToOneWithWhereWithoutMonitorsInput, Prisma.EndpointUpdateWithoutMonitorsInput>, Prisma.EndpointUncheckedUpdateWithoutMonitorsInput>
+}
+
+export type EndpointCreateNestedManyWithoutFolderInput = {
+  create?: Prisma.XOR<Prisma.EndpointCreateWithoutFolderInput, Prisma.EndpointUncheckedCreateWithoutFolderInput> | Prisma.EndpointCreateWithoutFolderInput[] | Prisma.EndpointUncheckedCreateWithoutFolderInput[]
+  connectOrCreate?: Prisma.EndpointCreateOrConnectWithoutFolderInput | Prisma.EndpointCreateOrConnectWithoutFolderInput[]
+  createMany?: Prisma.EndpointCreateManyFolderInputEnvelope
+  connect?: Prisma.EndpointWhereUniqueInput | Prisma.EndpointWhereUniqueInput[]
+}
+
+export type EndpointUncheckedCreateNestedManyWithoutFolderInput = {
+  create?: Prisma.XOR<Prisma.EndpointCreateWithoutFolderInput, Prisma.EndpointUncheckedCreateWithoutFolderInput> | Prisma.EndpointCreateWithoutFolderInput[] | Prisma.EndpointUncheckedCreateWithoutFolderInput[]
+  connectOrCreate?: Prisma.EndpointCreateOrConnectWithoutFolderInput | Prisma.EndpointCreateOrConnectWithoutFolderInput[]
+  createMany?: Prisma.EndpointCreateManyFolderInputEnvelope
+  connect?: Prisma.EndpointWhereUniqueInput | Prisma.EndpointWhereUniqueInput[]
+}
+
+export type EndpointUpdateManyWithoutFolderNestedInput = {
+  create?: Prisma.XOR<Prisma.EndpointCreateWithoutFolderInput, Prisma.EndpointUncheckedCreateWithoutFolderInput> | Prisma.EndpointCreateWithoutFolderInput[] | Prisma.EndpointUncheckedCreateWithoutFolderInput[]
+  connectOrCreate?: Prisma.EndpointCreateOrConnectWithoutFolderInput | Prisma.EndpointCreateOrConnectWithoutFolderInput[]
+  upsert?: Prisma.EndpointUpsertWithWhereUniqueWithoutFolderInput | Prisma.EndpointUpsertWithWhereUniqueWithoutFolderInput[]
+  createMany?: Prisma.EndpointCreateManyFolderInputEnvelope
+  set?: Prisma.EndpointWhereUniqueInput | Prisma.EndpointWhereUniqueInput[]
+  disconnect?: Prisma.EndpointWhereUniqueInput | Prisma.EndpointWhereUniqueInput[]
+  delete?: Prisma.EndpointWhereUniqueInput | Prisma.EndpointWhereUniqueInput[]
+  connect?: Prisma.EndpointWhereUniqueInput | Prisma.EndpointWhereUniqueInput[]
+  update?: Prisma.EndpointUpdateWithWhereUniqueWithoutFolderInput | Prisma.EndpointUpdateWithWhereUniqueWithoutFolderInput[]
+  updateMany?: Prisma.EndpointUpdateManyWithWhereWithoutFolderInput | Prisma.EndpointUpdateManyWithWhereWithoutFolderInput[]
+  deleteMany?: Prisma.EndpointScalarWhereInput | Prisma.EndpointScalarWhereInput[]
+}
+
+export type EndpointUncheckedUpdateManyWithoutFolderNestedInput = {
+  create?: Prisma.XOR<Prisma.EndpointCreateWithoutFolderInput, Prisma.EndpointUncheckedCreateWithoutFolderInput> | Prisma.EndpointCreateWithoutFolderInput[] | Prisma.EndpointUncheckedCreateWithoutFolderInput[]
+  connectOrCreate?: Prisma.EndpointCreateOrConnectWithoutFolderInput | Prisma.EndpointCreateOrConnectWithoutFolderInput[]
+  upsert?: Prisma.EndpointUpsertWithWhereUniqueWithoutFolderInput | Prisma.EndpointUpsertWithWhereUniqueWithoutFolderInput[]
+  createMany?: Prisma.EndpointCreateManyFolderInputEnvelope
+  set?: Prisma.EndpointWhereUniqueInput | Prisma.EndpointWhereUniqueInput[]
+  disconnect?: Prisma.EndpointWhereUniqueInput | Prisma.EndpointWhereUniqueInput[]
+  delete?: Prisma.EndpointWhereUniqueInput | Prisma.EndpointWhereUniqueInput[]
+  connect?: Prisma.EndpointWhereUniqueInput | Prisma.EndpointWhereUniqueInput[]
+  update?: Prisma.EndpointUpdateWithWhereUniqueWithoutFolderInput | Prisma.EndpointUpdateWithWhereUniqueWithoutFolderInput[]
+  updateMany?: Prisma.EndpointUpdateManyWithWhereWithoutFolderInput | Prisma.EndpointUpdateManyWithWhereWithoutFolderInput[]
+  deleteMany?: Prisma.EndpointScalarWhereInput | Prisma.EndpointScalarWhereInput[]
 }
 
 export type EndpointCreateNestedOneWithoutResponsesInput = {
@@ -552,11 +591,14 @@ export type EndpointCreateWithoutProjectInput = {
   name: string
   url: string
   method?: string
-  interval: number
-  status?: string
-  repeatJobKey?: string | null
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  folder?: Prisma.FolderCreateNestedOneWithoutEndpointsInput
+  monitors?: Prisma.MonitorCreateNestedManyWithoutEndpointInput
   responses?: Prisma.ResponseCreateNestedManyWithoutEndpointInput
 }
 
@@ -565,11 +607,14 @@ export type EndpointUncheckedCreateWithoutProjectInput = {
   name: string
   url: string
   method?: string
-  interval: number
-  status?: string
-  repeatJobKey?: string | null
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  folderId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  monitors?: Prisma.MonitorUncheckedCreateNestedManyWithoutEndpointInput
   responses?: Prisma.ResponseUncheckedCreateNestedManyWithoutEndpointInput
 }
 
@@ -607,12 +652,152 @@ export type EndpointScalarWhereInput = {
   name?: Prisma.StringFilter<"Endpoint"> | string
   url?: Prisma.StringFilter<"Endpoint"> | string
   method?: Prisma.StringFilter<"Endpoint"> | string
-  interval?: Prisma.IntFilter<"Endpoint"> | number
-  status?: Prisma.StringFilter<"Endpoint"> | string
+  headers?: Prisma.JsonNullableFilter<"Endpoint">
+  body?: Prisma.StringNullableFilter<"Endpoint"> | string | null
+  queryParams?: Prisma.JsonNullableFilter<"Endpoint">
+  auth?: Prisma.JsonNullableFilter<"Endpoint">
   projectId?: Prisma.StringFilter<"Endpoint"> | string
-  repeatJobKey?: Prisma.StringNullableFilter<"Endpoint"> | string | null
+  folderId?: Prisma.StringNullableFilter<"Endpoint"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Endpoint"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Endpoint"> | Date | string
+}
+
+export type EndpointCreateWithoutMonitorsInput = {
+  id?: string
+  name: string
+  url: string
+  method?: string
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  project: Prisma.ProjectCreateNestedOneWithoutEndpointsInput
+  folder?: Prisma.FolderCreateNestedOneWithoutEndpointsInput
+  responses?: Prisma.ResponseCreateNestedManyWithoutEndpointInput
+}
+
+export type EndpointUncheckedCreateWithoutMonitorsInput = {
+  id?: string
+  name: string
+  url: string
+  method?: string
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  projectId: string
+  folderId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  responses?: Prisma.ResponseUncheckedCreateNestedManyWithoutEndpointInput
+}
+
+export type EndpointCreateOrConnectWithoutMonitorsInput = {
+  where: Prisma.EndpointWhereUniqueInput
+  create: Prisma.XOR<Prisma.EndpointCreateWithoutMonitorsInput, Prisma.EndpointUncheckedCreateWithoutMonitorsInput>
+}
+
+export type EndpointUpsertWithoutMonitorsInput = {
+  update: Prisma.XOR<Prisma.EndpointUpdateWithoutMonitorsInput, Prisma.EndpointUncheckedUpdateWithoutMonitorsInput>
+  create: Prisma.XOR<Prisma.EndpointCreateWithoutMonitorsInput, Prisma.EndpointUncheckedCreateWithoutMonitorsInput>
+  where?: Prisma.EndpointWhereInput
+}
+
+export type EndpointUpdateToOneWithWhereWithoutMonitorsInput = {
+  where?: Prisma.EndpointWhereInput
+  data: Prisma.XOR<Prisma.EndpointUpdateWithoutMonitorsInput, Prisma.EndpointUncheckedUpdateWithoutMonitorsInput>
+}
+
+export type EndpointUpdateWithoutMonitorsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  method?: Prisma.StringFieldUpdateOperationsInput | string
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  project?: Prisma.ProjectUpdateOneRequiredWithoutEndpointsNestedInput
+  folder?: Prisma.FolderUpdateOneWithoutEndpointsNestedInput
+  responses?: Prisma.ResponseUpdateManyWithoutEndpointNestedInput
+}
+
+export type EndpointUncheckedUpdateWithoutMonitorsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  method?: Prisma.StringFieldUpdateOperationsInput | string
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  responses?: Prisma.ResponseUncheckedUpdateManyWithoutEndpointNestedInput
+}
+
+export type EndpointCreateWithoutFolderInput = {
+  id?: string
+  name: string
+  url: string
+  method?: string
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  project: Prisma.ProjectCreateNestedOneWithoutEndpointsInput
+  monitors?: Prisma.MonitorCreateNestedManyWithoutEndpointInput
+  responses?: Prisma.ResponseCreateNestedManyWithoutEndpointInput
+}
+
+export type EndpointUncheckedCreateWithoutFolderInput = {
+  id?: string
+  name: string
+  url: string
+  method?: string
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  projectId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  monitors?: Prisma.MonitorUncheckedCreateNestedManyWithoutEndpointInput
+  responses?: Prisma.ResponseUncheckedCreateNestedManyWithoutEndpointInput
+}
+
+export type EndpointCreateOrConnectWithoutFolderInput = {
+  where: Prisma.EndpointWhereUniqueInput
+  create: Prisma.XOR<Prisma.EndpointCreateWithoutFolderInput, Prisma.EndpointUncheckedCreateWithoutFolderInput>
+}
+
+export type EndpointCreateManyFolderInputEnvelope = {
+  data: Prisma.EndpointCreateManyFolderInput | Prisma.EndpointCreateManyFolderInput[]
+  skipDuplicates?: boolean
+}
+
+export type EndpointUpsertWithWhereUniqueWithoutFolderInput = {
+  where: Prisma.EndpointWhereUniqueInput
+  update: Prisma.XOR<Prisma.EndpointUpdateWithoutFolderInput, Prisma.EndpointUncheckedUpdateWithoutFolderInput>
+  create: Prisma.XOR<Prisma.EndpointCreateWithoutFolderInput, Prisma.EndpointUncheckedCreateWithoutFolderInput>
+}
+
+export type EndpointUpdateWithWhereUniqueWithoutFolderInput = {
+  where: Prisma.EndpointWhereUniqueInput
+  data: Prisma.XOR<Prisma.EndpointUpdateWithoutFolderInput, Prisma.EndpointUncheckedUpdateWithoutFolderInput>
+}
+
+export type EndpointUpdateManyWithWhereWithoutFolderInput = {
+  where: Prisma.EndpointScalarWhereInput
+  data: Prisma.XOR<Prisma.EndpointUpdateManyMutationInput, Prisma.EndpointUncheckedUpdateManyWithoutFolderInput>
 }
 
 export type EndpointCreateWithoutResponsesInput = {
@@ -620,12 +805,15 @@ export type EndpointCreateWithoutResponsesInput = {
   name: string
   url: string
   method?: string
-  interval: number
-  status?: string
-  repeatJobKey?: string | null
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutEndpointsInput
+  folder?: Prisma.FolderCreateNestedOneWithoutEndpointsInput
+  monitors?: Prisma.MonitorCreateNestedManyWithoutEndpointInput
 }
 
 export type EndpointUncheckedCreateWithoutResponsesInput = {
@@ -633,12 +821,15 @@ export type EndpointUncheckedCreateWithoutResponsesInput = {
   name: string
   url: string
   method?: string
-  interval: number
-  status?: string
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   projectId: string
-  repeatJobKey?: string | null
+  folderId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  monitors?: Prisma.MonitorUncheckedCreateNestedManyWithoutEndpointInput
 }
 
 export type EndpointCreateOrConnectWithoutResponsesInput = {
@@ -662,12 +853,15 @@ export type EndpointUpdateWithoutResponsesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.StringFieldUpdateOperationsInput | string
-  interval?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  repeatJobKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutEndpointsNestedInput
+  folder?: Prisma.FolderUpdateOneWithoutEndpointsNestedInput
+  monitors?: Prisma.MonitorUpdateManyWithoutEndpointNestedInput
 }
 
 export type EndpointUncheckedUpdateWithoutResponsesInput = {
@@ -675,12 +869,15 @@ export type EndpointUncheckedUpdateWithoutResponsesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.StringFieldUpdateOperationsInput | string
-  interval?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
-  repeatJobKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  monitors?: Prisma.MonitorUncheckedUpdateManyWithoutEndpointNestedInput
 }
 
 export type EndpointCreateManyProjectInput = {
@@ -688,9 +885,11 @@ export type EndpointCreateManyProjectInput = {
   name: string
   url: string
   method?: string
-  interval: number
-  status?: string
-  repeatJobKey?: string | null
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  folderId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -700,11 +899,14 @@ export type EndpointUpdateWithoutProjectInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.StringFieldUpdateOperationsInput | string
-  interval?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  repeatJobKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  folder?: Prisma.FolderUpdateOneWithoutEndpointsNestedInput
+  monitors?: Prisma.MonitorUpdateManyWithoutEndpointNestedInput
   responses?: Prisma.ResponseUpdateManyWithoutEndpointNestedInput
 }
 
@@ -713,11 +915,14 @@ export type EndpointUncheckedUpdateWithoutProjectInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.StringFieldUpdateOperationsInput | string
-  interval?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  repeatJobKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  monitors?: Prisma.MonitorUncheckedUpdateManyWithoutEndpointNestedInput
   responses?: Prisma.ResponseUncheckedUpdateManyWithoutEndpointNestedInput
 }
 
@@ -726,9 +931,71 @@ export type EndpointUncheckedUpdateManyWithoutProjectInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.StringFieldUpdateOperationsInput | string
-  interval?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  repeatJobKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type EndpointCreateManyFolderInput = {
+  id?: string
+  name: string
+  url: string
+  method?: string
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  projectId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type EndpointUpdateWithoutFolderInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  method?: Prisma.StringFieldUpdateOperationsInput | string
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  project?: Prisma.ProjectUpdateOneRequiredWithoutEndpointsNestedInput
+  monitors?: Prisma.MonitorUpdateManyWithoutEndpointNestedInput
+  responses?: Prisma.ResponseUpdateManyWithoutEndpointNestedInput
+}
+
+export type EndpointUncheckedUpdateWithoutFolderInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  method?: Prisma.StringFieldUpdateOperationsInput | string
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  monitors?: Prisma.MonitorUncheckedUpdateManyWithoutEndpointNestedInput
+  responses?: Prisma.ResponseUncheckedUpdateManyWithoutEndpointNestedInput
+}
+
+export type EndpointUncheckedUpdateManyWithoutFolderInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  method?: Prisma.StringFieldUpdateOperationsInput | string
+  headers?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -739,10 +1006,12 @@ export type EndpointUncheckedUpdateManyWithoutProjectInput = {
  */
 
 export type EndpointCountOutputType = {
+  monitors: number
   responses: number
 }
 
 export type EndpointCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  monitors?: boolean | EndpointCountOutputTypeCountMonitorsArgs
   responses?: boolean | EndpointCountOutputTypeCountResponsesArgs
 }
 
@@ -759,6 +1028,13 @@ export type EndpointCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ext
 /**
  * EndpointCountOutputType without action
  */
+export type EndpointCountOutputTypeCountMonitorsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MonitorWhereInput
+}
+
+/**
+ * EndpointCountOutputType without action
+ */
 export type EndpointCountOutputTypeCountResponsesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ResponseWhereInput
 }
@@ -769,13 +1045,17 @@ export type EndpointSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   name?: boolean
   url?: boolean
   method?: boolean
-  interval?: boolean
-  status?: boolean
+  headers?: boolean
+  body?: boolean
+  queryParams?: boolean
+  auth?: boolean
   projectId?: boolean
-  repeatJobKey?: boolean
+  folderId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  folder?: boolean | Prisma.Endpoint$folderArgs<ExtArgs>
+  monitors?: boolean | Prisma.Endpoint$monitorsArgs<ExtArgs>
   responses?: boolean | Prisma.Endpoint$responsesArgs<ExtArgs>
   _count?: boolean | Prisma.EndpointCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["endpoint"]>
@@ -785,13 +1065,16 @@ export type EndpointSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   name?: boolean
   url?: boolean
   method?: boolean
-  interval?: boolean
-  status?: boolean
+  headers?: boolean
+  body?: boolean
+  queryParams?: boolean
+  auth?: boolean
   projectId?: boolean
-  repeatJobKey?: boolean
+  folderId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  folder?: boolean | Prisma.Endpoint$folderArgs<ExtArgs>
 }, ExtArgs["result"]["endpoint"]>
 
 export type EndpointSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -799,13 +1082,16 @@ export type EndpointSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   name?: boolean
   url?: boolean
   method?: boolean
-  interval?: boolean
-  status?: boolean
+  headers?: boolean
+  body?: boolean
+  queryParams?: boolean
+  auth?: boolean
   projectId?: boolean
-  repeatJobKey?: boolean
+  folderId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  folder?: boolean | Prisma.Endpoint$folderArgs<ExtArgs>
 }, ExtArgs["result"]["endpoint"]>
 
 export type EndpointSelectScalar = {
@@ -813,31 +1099,39 @@ export type EndpointSelectScalar = {
   name?: boolean
   url?: boolean
   method?: boolean
-  interval?: boolean
-  status?: boolean
+  headers?: boolean
+  body?: boolean
+  queryParams?: boolean
+  auth?: boolean
   projectId?: boolean
-  repeatJobKey?: boolean
+  folderId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type EndpointOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "url" | "method" | "interval" | "status" | "projectId" | "repeatJobKey" | "createdAt" | "updatedAt", ExtArgs["result"]["endpoint"]>
+export type EndpointOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "url" | "method" | "headers" | "body" | "queryParams" | "auth" | "projectId" | "folderId" | "createdAt" | "updatedAt", ExtArgs["result"]["endpoint"]>
 export type EndpointInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  folder?: boolean | Prisma.Endpoint$folderArgs<ExtArgs>
+  monitors?: boolean | Prisma.Endpoint$monitorsArgs<ExtArgs>
   responses?: boolean | Prisma.Endpoint$responsesArgs<ExtArgs>
   _count?: boolean | Prisma.EndpointCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type EndpointIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  folder?: boolean | Prisma.Endpoint$folderArgs<ExtArgs>
 }
 export type EndpointIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  folder?: boolean | Prisma.Endpoint$folderArgs<ExtArgs>
 }
 
 export type $EndpointPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Endpoint"
   objects: {
     project: Prisma.$ProjectPayload<ExtArgs>
+    folder: Prisma.$FolderPayload<ExtArgs> | null
+    monitors: Prisma.$MonitorPayload<ExtArgs>[]
     responses: Prisma.$ResponsePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -845,10 +1139,12 @@ export type $EndpointPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     name: string
     url: string
     method: string
-    interval: number
-    status: string
+    headers: runtime.JsonValue | null
+    body: string | null
+    queryParams: runtime.JsonValue | null
+    auth: runtime.JsonValue | null
     projectId: string
-    repeatJobKey: string | null
+    folderId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["endpoint"]>
@@ -1246,6 +1542,8 @@ readonly fields: EndpointFieldRefs;
 export interface Prisma__EndpointClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  folder<T extends Prisma.Endpoint$folderArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Endpoint$folderArgs<ExtArgs>>): Prisma.Prisma__FolderClient<runtime.Types.Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  monitors<T extends Prisma.Endpoint$monitorsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Endpoint$monitorsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MonitorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   responses<T extends Prisma.Endpoint$responsesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Endpoint$responsesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ResponsePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1280,10 +1578,12 @@ export interface EndpointFieldRefs {
   readonly name: Prisma.FieldRef<"Endpoint", 'String'>
   readonly url: Prisma.FieldRef<"Endpoint", 'String'>
   readonly method: Prisma.FieldRef<"Endpoint", 'String'>
-  readonly interval: Prisma.FieldRef<"Endpoint", 'Int'>
-  readonly status: Prisma.FieldRef<"Endpoint", 'String'>
+  readonly headers: Prisma.FieldRef<"Endpoint", 'Json'>
+  readonly body: Prisma.FieldRef<"Endpoint", 'String'>
+  readonly queryParams: Prisma.FieldRef<"Endpoint", 'Json'>
+  readonly auth: Prisma.FieldRef<"Endpoint", 'Json'>
   readonly projectId: Prisma.FieldRef<"Endpoint", 'String'>
-  readonly repeatJobKey: Prisma.FieldRef<"Endpoint", 'String'>
+  readonly folderId: Prisma.FieldRef<"Endpoint", 'String'>
   readonly createdAt: Prisma.FieldRef<"Endpoint", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Endpoint", 'DateTime'>
 }
@@ -1684,6 +1984,49 @@ export type EndpointDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Limit how many Endpoints to delete.
    */
   limit?: number
+}
+
+/**
+ * Endpoint.folder
+ */
+export type Endpoint$folderArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Folder
+   */
+  select?: Prisma.FolderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Folder
+   */
+  omit?: Prisma.FolderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FolderInclude<ExtArgs> | null
+  where?: Prisma.FolderWhereInput
+}
+
+/**
+ * Endpoint.monitors
+ */
+export type Endpoint$monitorsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Monitor
+   */
+  select?: Prisma.MonitorSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Monitor
+   */
+  omit?: Prisma.MonitorOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MonitorInclude<ExtArgs> | null
+  where?: Prisma.MonitorWhereInput
+  orderBy?: Prisma.MonitorOrderByWithRelationInput | Prisma.MonitorOrderByWithRelationInput[]
+  cursor?: Prisma.MonitorWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MonitorScalarFieldEnum | Prisma.MonitorScalarFieldEnum[]
 }
 
 /**

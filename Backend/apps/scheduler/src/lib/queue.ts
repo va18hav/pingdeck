@@ -1,4 +1,4 @@
-import { Queue, ConnectionOptions } from 'bullmq';
+import { Queue, QueueEvents, ConnectionOptions } from 'bullmq';
 
 const getRedisConnection = (): ConnectionOptions => {
     const redisUrl = process.env.REDIS_URL;
@@ -26,3 +26,4 @@ const getRedisConnection = (): ConnectionOptions => {
 const connection = getRedisConnection();
 
 export const jobQueue = new Queue('jobs-queue', { connection });
+export const queueEvents = new QueueEvents('jobs-queue', { connection });

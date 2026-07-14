@@ -11,6 +11,8 @@
 export type * from './models/User.js'
 export type * from './models/Project.js'
 export type * from './models/Endpoint.js'
+export type * from './models/Monitor.js'
+export type * from './models/Folder.js'
 export type * from './models/Response.js'
 export type * from './models/Worker.js'
 export type * from './commonInputTypes.js'

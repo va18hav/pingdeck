@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createEndpointSchema } from '../types/validation.types.js';
+import { createEndpointSchema, updateEndpointSchema } from '../types/validation.types.js';
 import * as endpointService from '../services/endpoint.service.js';
 
 export const createEndpoint = async (req: Request, res: Response) => {
@@ -36,4 +36,19 @@ export const getEndpointDetails = async (req: Request, res: Response) => {
 
     const endpoint = await endpointService.getEndpointDetails(req.userId, req.params.id as string);
     res.status(200).json({ success: true, data: endpoint });
+};
+
+export const testEndpoint = async (req: Request, res: Response) => {
+    if (!req.userId) return res.status(401).json({ success: false, message: 'Unauthorized' });
+
+    const result = await endpointService.testEndpoint(req.userId, req.params.id as string);
+    res.status(200).json({ success: true, data: result });
+};
+
+export const updateEndpoint = async (req: Request, res: Response) => {
+    const data = updateEndpointSchema.parse(req.body);
+    if (!req.userId) return res.status(401).json({ success: false, message: 'Unauthorized' });
+
+    const result = await endpointService.updateEndpoint(req.userId, req.params.id as string, data);
+    res.status(200).json({ success: true, data: result });
 };

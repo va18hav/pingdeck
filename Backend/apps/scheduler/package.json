@@ -14,23 +14,26 @@
     "license": "ISC",
     "type": "module",
     "dependencies": {
-        "db": "*",
-        "shared": "*",
+        "bcryptjs": "^2.4.3",
         "bullmq": "^5.8.5",
+        "cookie-parser": "^1.4.6",
         "cors": "^2.8.6",
+        "db": "*",
         "dotenv": "^17.4.2",
         "express": "^5.2.1",
-        "bcryptjs": "^2.4.3",
+        "express-rate-limit": "^8.5.2",
+        "ioredis": "^5.4.1",
         "jsonwebtoken": "^9.0.2",
-        "cookie-parser": "^1.4.6",
+        "rate-limit-redis": "^5.0.0",
+        "shared": "*",
         "zod": "^3.23.8"
     },
     "devDependencies": {
+        "@types/bcryptjs": "^2.4.6",
+        "@types/cookie-parser": "^1.4.7",
         "@types/cors": "^2.8.19",
         "@types/dotenv": "^6.1.1",
         "@types/express": "^5.0.6",
-        "@types/bcryptjs": "^2.4.6",
-        "@types/jsonwebtoken": "^9.0.6",
-        "@types/cookie-parser": "^1.4.7"
+        "@types/jsonwebtoken": "^9.0.6"
     }
 }

@@ -23,34 +23,87 @@ model Project {
   user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String
   endpoints   Endpoint[]
+  folders     Folder[]
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 }
 
 model Endpoint {
-  id           String     @id @default(uuid())
-  name         String
-  url          String
-  method       String     @default("GET")
-  interval     Int
-  status       String     @default("PENDING")
+  id          String  @id @default(uuid())
+  name        String
+  url         String
+  method      String  @default("GET")
+  
+  // Advanced API Config
+  headers     Json?
+  body        String?
+  queryParams Json?
+  auth        Json?
+
   project      Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId    String
-  repeatJobKey String?
+  
+  folder       Folder?    @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  folderId     String?
+  
+  monitors     Monitor[]
   responses    Response[]
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 }
 
-model Response {
-  id           String   @id @default(uuid())
-  endpoint     Endpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+model Monitor {
+  id           String     @id @default(uuid())
+  interval     Int        // e.g., 5 minutes
+  status       String     @default("PENDING") // 'UP', 'DOWN', 'PENDING'
+  repeatJobKey String?    // BullMQ job reference
+  
+  endpoint     Endpoint   @relation(fields: [endpointId], references: [id], onDelete: Cascade)
   endpointId   String
-  statusCode   Int?
-  responseTime Int?
-  status       String // 'UP' | 'DOWN'
-  error        String?
-  createdAt    DateTime @default(now())
+  
+  responses    Response[]
+  
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Folder {
+  id        String     @id @default(uuid())
+  name      String
+  
+  project   Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+
+  parent    Folder?    @relation("FolderToFolder", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId  String?
+  children  Folder[]   @relation("FolderToFolder")
+
+  endpoints Endpoint[]
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Response {
+  id              String   @id @default(uuid())
+  
+  endpoint        Endpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+  endpointId      String
+  
+  // Optional: If this response was triggered by a monitor
+  monitor         Monitor? @relation(fields: [monitorId], references: [id], onDelete: SetNull)
+  monitorId       String?
+  
+  statusCode      Int?
+  responseTime    Int?
+  status          String // 'UP' | 'DOWN'
+  error           String?
+  
+  // Full API Response Details
+  responseBody    String?
+  responseHeaders Json?
+
+  createdAt DateTime @default(now())
 }
 
 model Worker {

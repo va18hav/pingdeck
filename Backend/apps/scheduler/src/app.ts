@@ -6,7 +6,10 @@ import authRoutes from './routes/auth.routes.js';
 import projectRoutes from './routes/project.routes.js';
 import endpointRoutes from './routes/endpoint.routes.js';
 import statsRoutes from './routes/stats.routes.js';
+import monitorRoutes from './routes/monitor.routes.js';
+import folderRoutes from './routes/folder.routes.js';
 import { errorHandler } from './middlewares/errorHandler.js';
+import { authLimiter, testPingLimiter, generalLimiter } from './middlewares/rateLimiter.js';
 import { logger, register } from 'shared';
 import { randomUUID } from 'crypto';
 
@@ -21,7 +24,7 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'x-request-id']
 }))
 
-app.use(express.json())
+app.use(express.json({ limit: '100kb' }))
 app.use(cookieParser())
 
 // Request tracking middleware
@@ -53,10 +56,12 @@ app.get('/metrics', async (req, res) => {
     }
 });
 
-app.use('/auth', authRoutes)
-app.use('/project', projectRoutes)
-app.use('/endpoint', endpointRoutes)
-app.use('/stats', statsRoutes)
+app.use('/auth', authLimiter, authRoutes)
+app.use('/project', generalLimiter, projectRoutes)
+app.use('/folder', generalLimiter, folderRoutes)
+app.use('/endpoint', generalLimiter, endpointRoutes)
+app.use('/stats', generalLimiter, statsRoutes)
+app.use('/monitor', generalLimiter, monitorRoutes)
 
 // Global error handler
 app.use(errorHandler)

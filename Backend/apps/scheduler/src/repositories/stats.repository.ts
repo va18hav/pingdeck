@@ -31,8 +31,6 @@ export const getRecentEndpointsByUser = async (userId: string, take: number = 5)
             name: true,
             url: true,
             method: true,
-            interval: true,
-            status: true,
             project: { select: { name: true } }
         }
     });

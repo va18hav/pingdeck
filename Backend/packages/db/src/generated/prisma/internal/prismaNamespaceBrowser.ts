@@ -54,6 +54,8 @@ export const ModelName = {
   User: 'User',
   Project: 'Project',
   Endpoint: 'Endpoint',
+  Monitor: 'Monitor',
+  Folder: 'Folder',
   Response: 'Response',
   Worker: 'Worker'
 } as const
@@ -102,10 +104,12 @@ export const EndpointScalarFieldEnum = {
   name: 'name',
   url: 'url',
   method: 'method',
-  interval: 'interval',
-  status: 'status',
+  headers: 'headers',
+  body: 'body',
+  queryParams: 'queryParams',
+  auth: 'auth',
   projectId: 'projectId',
-  repeatJobKey: 'repeatJobKey',
+  folderId: 'folderId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -113,13 +117,41 @@ export const EndpointScalarFieldEnum = {
 export type EndpointScalarFieldEnum = (typeof EndpointScalarFieldEnum)[keyof typeof EndpointScalarFieldEnum]
 
 
+export const MonitorScalarFieldEnum = {
+  id: 'id',
+  interval: 'interval',
+  status: 'status',
+  repeatJobKey: 'repeatJobKey',
+  endpointId: 'endpointId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MonitorScalarFieldEnum = (typeof MonitorScalarFieldEnum)[keyof typeof MonitorScalarFieldEnum]
+
+
+export const FolderScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  projectId: 'projectId',
+  parentId: 'parentId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FolderScalarFieldEnum = (typeof FolderScalarFieldEnum)[keyof typeof FolderScalarFieldEnum]
+
+
 export const ResponseScalarFieldEnum = {
   id: 'id',
   endpointId: 'endpointId',
+  monitorId: 'monitorId',
   statusCode: 'statusCode',
   responseTime: 'responseTime',
   status: 'status',
   error: 'error',
+  responseBody: 'responseBody',
+  responseHeaders: 'responseHeaders',
   createdAt: 'createdAt'
 } as const
 
@@ -145,6 +177,14 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -159,4 +199,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

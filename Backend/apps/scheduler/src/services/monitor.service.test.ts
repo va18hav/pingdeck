@@ -1,5 +1,5 @@
 import { jest, describe, it, expect, beforeEach } from '@jest/globals';
-import { addScheduledJob, syncDatabaseEndpointsWithQueue } from './job.service.js';
+import { addScheduledJob, syncDatabaseMonitorsWithQueue } from './monitor.service.js';
 import { jobQueue } from '../lib/queue.js';
 import { prisma } from 'db';
 
@@ -14,6 +14,10 @@ jest.mock('../lib/queue', () => ({
 jest.mock('db', () => ({
     prisma: {
         endpoint: {
+            findMany: jest.fn(),
+            update: jest.fn()
+        },
+        monitor: {
             findMany: jest.fn(),
             update: jest.fn()
         }
@@ -82,21 +86,23 @@ describe('Scheduler Job Service - Queue Scheduling & Sync', () => {
         });
     });
 
-    describe('syncDatabaseEndpointsWithQueue()', () => {
+    describe('syncDatabaseMonitorsWithQueue()', () => {
         it('should detect missing repeatable checks in Redis and automatically schedule them', async () => {
-            // Arrange: DB contains an endpoint, but Redis queue is empty
-            const mockEndpoint = {
-                id: 'endpoint-abc',
-                name: 'Main Check',
-                url: 'http://test.com',
+            // Arrange: DB contains a monitor, but Redis queue is empty
+            const mockMonitor = {
+                id: 'monitor-abc',
+                endpointId: 'endpoint-abc',
                 interval: 2,
+                status: 'PENDING',
                 repeatJobKey: 'repeat:key-stale-or-empty',
-                project: {
-                    userId: 'user-789'
+                endpoint: {
+                    project: {
+                        userId: 'user-789'
+                    }
                 }
             };
 
-            (prisma.endpoint.findMany as any).mockResolvedValue([mockEndpoint]);
+            (prisma.monitor.findMany as any).mockResolvedValue([mockMonitor]);
             (jobQueue.getRepeatableJobs as any).mockResolvedValue([]); // Redis repeatable jobs list is empty
 
             (jobQueue.add as any).mockResolvedValue({
@@ -104,7 +110,7 @@ describe('Scheduler Job Service - Queue Scheduling & Sync', () => {
             });
 
             // Act
-            await syncDatabaseEndpointsWithQueue();
+            await syncDatabaseMonitorsWithQueue();
 
             // Assert: Job rescheduled with unique jobId
             expect(jobQueue.add).toHaveBeenCalledWith(
@@ -117,26 +123,28 @@ describe('Scheduler Job Service - Queue Scheduling & Sync', () => {
             );
 
             // Assert: Rescheduled key updated in database
-            expect(prisma.endpoint.update).toHaveBeenCalledWith({
-                where: { id: 'endpoint-abc' },
+            expect(prisma.monitor.update).toHaveBeenCalledWith({
+                where: { id: 'monitor-abc' },
                 data: { repeatJobKey: 'repeat:key-new-generated-uuid' }
             });
         });
 
-        it('should skip synchronization if the endpoint configuration is already registered in Redis repeatable jobs list', async () => {
+        it('should skip synchronization if the monitor configuration is already registered in Redis repeatable jobs list', async () => {
             // Arrange: Database keys match active keys in Redis repeatable logs
-            const mockEndpoint = {
-                id: 'endpoint-abc',
-                name: 'Main Check',
-                url: 'http://test.com',
+            const mockMonitor = {
+                id: 'monitor-abc',
+                endpointId: 'endpoint-abc',
                 interval: 2,
+                status: 'PENDING',
                 repeatJobKey: 'repeat:active-key-123',
-                project: {
-                    userId: 'user-789'
+                endpoint: {
+                    project: {
+                        userId: 'user-789'
+                    }
                 }
             };
 
-            (prisma.endpoint.findMany as any).mockResolvedValue([mockEndpoint]);
+            (prisma.monitor.findMany as any).mockResolvedValue([mockMonitor]);
             
             // Redis already contains the matching repeatable key
             (jobQueue.getRepeatableJobs as any).mockResolvedValue([
@@ -144,11 +152,11 @@ describe('Scheduler Job Service - Queue Scheduling & Sync', () => {
             ]);
 
             // Act
-            await syncDatabaseEndpointsWithQueue();
+            await syncDatabaseMonitorsWithQueue();
 
             // Assert: Verify sync execution skipped
             expect(jobQueue.add).not.toHaveBeenCalled();
-            expect(prisma.endpoint.update).not.toHaveBeenCalled();
+            expect(prisma.monitor.update).not.toHaveBeenCalled();
         });
     });
 });

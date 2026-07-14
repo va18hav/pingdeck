@@ -39,30 +39,37 @@ export type ResponseSumAggregateOutputType = {
 export type ResponseMinAggregateOutputType = {
   id: string | null
   endpointId: string | null
+  monitorId: string | null
   statusCode: number | null
   responseTime: number | null
   status: string | null
   error: string | null
+  responseBody: string | null
   createdAt: Date | null
 }
 
 export type ResponseMaxAggregateOutputType = {
   id: string | null
   endpointId: string | null
+  monitorId: string | null
   statusCode: number | null
   responseTime: number | null
   status: string | null
   error: string | null
+  responseBody: string | null
   createdAt: Date | null
 }
 
 export type ResponseCountAggregateOutputType = {
   id: number
   endpointId: number
+  monitorId: number
   statusCode: number
   responseTime: number
   status: number
   error: number
+  responseBody: number
+  responseHeaders: number
   createdAt: number
   _all: number
 }
@@ -81,30 +88,37 @@ export type ResponseSumAggregateInputType = {
 export type ResponseMinAggregateInputType = {
   id?: true
   endpointId?: true
+  monitorId?: true
   statusCode?: true
   responseTime?: true
   status?: true
   error?: true
+  responseBody?: true
   createdAt?: true
 }
 
 export type ResponseMaxAggregateInputType = {
   id?: true
   endpointId?: true
+  monitorId?: true
   statusCode?: true
   responseTime?: true
   status?: true
   error?: true
+  responseBody?: true
   createdAt?: true
 }
 
 export type ResponseCountAggregateInputType = {
   id?: true
   endpointId?: true
+  monitorId?: true
   statusCode?: true
   responseTime?: true
   status?: true
   error?: true
+  responseBody?: true
+  responseHeaders?: true
   createdAt?: true
   _all?: true
 }
@@ -198,10 +212,13 @@ export type ResponseGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 export type ResponseGroupByOutputType = {
   id: string
   endpointId: string
+  monitorId: string | null
   statusCode: number | null
   responseTime: number | null
   status: string
   error: string | null
+  responseBody: string | null
+  responseHeaders: runtime.JsonValue | null
   createdAt: Date
   _count: ResponseCountAggregateOutputType | null
   _avg: ResponseAvgAggregateOutputType | null
@@ -231,23 +248,31 @@ export type ResponseWhereInput = {
   NOT?: Prisma.ResponseWhereInput | Prisma.ResponseWhereInput[]
   id?: Prisma.StringFilter<"Response"> | string
   endpointId?: Prisma.StringFilter<"Response"> | string
+  monitorId?: Prisma.StringNullableFilter<"Response"> | string | null
   statusCode?: Prisma.IntNullableFilter<"Response"> | number | null
   responseTime?: Prisma.IntNullableFilter<"Response"> | number | null
   status?: Prisma.StringFilter<"Response"> | string
   error?: Prisma.StringNullableFilter<"Response"> | string | null
+  responseBody?: Prisma.StringNullableFilter<"Response"> | string | null
+  responseHeaders?: Prisma.JsonNullableFilter<"Response">
   createdAt?: Prisma.DateTimeFilter<"Response"> | Date | string
   endpoint?: Prisma.XOR<Prisma.EndpointScalarRelationFilter, Prisma.EndpointWhereInput>
+  monitor?: Prisma.XOR<Prisma.MonitorNullableScalarRelationFilter, Prisma.MonitorWhereInput> | null
 }
 
 export type ResponseOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   endpointId?: Prisma.SortOrder
+  monitorId?: Prisma.SortOrderInput | Prisma.SortOrder
   statusCode?: Prisma.SortOrderInput | Prisma.SortOrder
   responseTime?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   error?: Prisma.SortOrderInput | Prisma.SortOrder
+  responseBody?: Prisma.SortOrderInput | Prisma.SortOrder
+  responseHeaders?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   endpoint?: Prisma.EndpointOrderByWithRelationInput
+  monitor?: Prisma.MonitorOrderByWithRelationInput
 }
 
 export type ResponseWhereUniqueInput = Prisma.AtLeast<{
@@ -256,21 +281,28 @@ export type ResponseWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ResponseWhereInput[]
   NOT?: Prisma.ResponseWhereInput | Prisma.ResponseWhereInput[]
   endpointId?: Prisma.StringFilter<"Response"> | string
+  monitorId?: Prisma.StringNullableFilter<"Response"> | string | null
   statusCode?: Prisma.IntNullableFilter<"Response"> | number | null
   responseTime?: Prisma.IntNullableFilter<"Response"> | number | null
   status?: Prisma.StringFilter<"Response"> | string
   error?: Prisma.StringNullableFilter<"Response"> | string | null
+  responseBody?: Prisma.StringNullableFilter<"Response"> | string | null
+  responseHeaders?: Prisma.JsonNullableFilter<"Response">
   createdAt?: Prisma.DateTimeFilter<"Response"> | Date | string
   endpoint?: Prisma.XOR<Prisma.EndpointScalarRelationFilter, Prisma.EndpointWhereInput>
+  monitor?: Prisma.XOR<Prisma.MonitorNullableScalarRelationFilter, Prisma.MonitorWhereInput> | null
 }, "id">
 
 export type ResponseOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   endpointId?: Prisma.SortOrder
+  monitorId?: Prisma.SortOrderInput | Prisma.SortOrder
   statusCode?: Prisma.SortOrderInput | Prisma.SortOrder
   responseTime?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   error?: Prisma.SortOrderInput | Prisma.SortOrder
+  responseBody?: Prisma.SortOrderInput | Prisma.SortOrder
+  responseHeaders?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.ResponseCountOrderByAggregateInput
   _avg?: Prisma.ResponseAvgOrderByAggregateInput
@@ -285,10 +317,13 @@ export type ResponseScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ResponseScalarWhereWithAggregatesInput | Prisma.ResponseScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Response"> | string
   endpointId?: Prisma.StringWithAggregatesFilter<"Response"> | string
+  monitorId?: Prisma.StringNullableWithAggregatesFilter<"Response"> | string | null
   statusCode?: Prisma.IntNullableWithAggregatesFilter<"Response"> | number | null
   responseTime?: Prisma.IntNullableWithAggregatesFilter<"Response"> | number | null
   status?: Prisma.StringWithAggregatesFilter<"Response"> | string
   error?: Prisma.StringNullableWithAggregatesFilter<"Response"> | string | null
+  responseBody?: Prisma.StringNullableWithAggregatesFilter<"Response"> | string | null
+  responseHeaders?: Prisma.JsonNullableWithAggregatesFilter<"Response">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Response"> | Date | string
 }
 
@@ -298,17 +333,23 @@ export type ResponseCreateInput = {
   responseTime?: number | null
   status: string
   error?: string | null
+  responseBody?: string | null
+  responseHeaders?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   endpoint: Prisma.EndpointCreateNestedOneWithoutResponsesInput
+  monitor?: Prisma.MonitorCreateNestedOneWithoutResponsesInput
 }
 
 export type ResponseUncheckedCreateInput = {
   id?: string
   endpointId: string
+  monitorId?: string | null
   statusCode?: number | null
   responseTime?: number | null
   status: string
   error?: string | null
+  responseBody?: string | null
+  responseHeaders?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
 
@@ -318,27 +359,36 @@ export type ResponseUpdateInput = {
   responseTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   error?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responseBody?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responseHeaders?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endpoint?: Prisma.EndpointUpdateOneRequiredWithoutResponsesNestedInput
+  monitor?: Prisma.MonitorUpdateOneWithoutResponsesNestedInput
 }
 
 export type ResponseUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   endpointId?: Prisma.StringFieldUpdateOperationsInput | string
+  monitorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statusCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   responseTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   error?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responseBody?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responseHeaders?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ResponseCreateManyInput = {
   id?: string
   endpointId: string
+  monitorId?: string | null
   statusCode?: number | null
   responseTime?: number | null
   status: string
   error?: string | null
+  responseBody?: string | null
+  responseHeaders?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
 
@@ -348,16 +398,21 @@ export type ResponseUpdateManyMutationInput = {
   responseTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   error?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responseBody?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responseHeaders?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ResponseUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   endpointId?: Prisma.StringFieldUpdateOperationsInput | string
+  monitorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statusCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   responseTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   error?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responseBody?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responseHeaders?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -374,10 +429,13 @@ export type ResponseOrderByRelationAggregateInput = {
 export type ResponseCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   endpointId?: Prisma.SortOrder
+  monitorId?: Prisma.SortOrder
   statusCode?: Prisma.SortOrder
   responseTime?: Prisma.SortOrder
   status?: Prisma.SortOrder
   error?: Prisma.SortOrder
+  responseBody?: Prisma.SortOrder
+  responseHeaders?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -389,20 +447,24 @@ export type ResponseAvgOrderByAggregateInput = {
 export type ResponseMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   endpointId?: Prisma.SortOrder
+  monitorId?: Prisma.SortOrder
   statusCode?: Prisma.SortOrder
   responseTime?: Prisma.SortOrder
   status?: Prisma.SortOrder
   error?: Prisma.SortOrder
+  responseBody?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type ResponseMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   endpointId?: Prisma.SortOrder
+  monitorId?: Prisma.SortOrder
   statusCode?: Prisma.SortOrder
   responseTime?: Prisma.SortOrder
   status?: Prisma.SortOrder
   error?: Prisma.SortOrder
+  responseBody?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -453,6 +515,48 @@ export type ResponseUncheckedUpdateManyWithoutEndpointNestedInput = {
   deleteMany?: Prisma.ResponseScalarWhereInput | Prisma.ResponseScalarWhereInput[]
 }
 
+export type ResponseCreateNestedManyWithoutMonitorInput = {
+  create?: Prisma.XOR<Prisma.ResponseCreateWithoutMonitorInput, Prisma.ResponseUncheckedCreateWithoutMonitorInput> | Prisma.ResponseCreateWithoutMonitorInput[] | Prisma.ResponseUncheckedCreateWithoutMonitorInput[]
+  connectOrCreate?: Prisma.ResponseCreateOrConnectWithoutMonitorInput | Prisma.ResponseCreateOrConnectWithoutMonitorInput[]
+  createMany?: Prisma.ResponseCreateManyMonitorInputEnvelope
+  connect?: Prisma.ResponseWhereUniqueInput | Prisma.ResponseWhereUniqueInput[]
+}
+
+export type ResponseUncheckedCreateNestedManyWithoutMonitorInput = {
+  create?: Prisma.XOR<Prisma.ResponseCreateWithoutMonitorInput, Prisma.ResponseUncheckedCreateWithoutMonitorInput> | Prisma.ResponseCreateWithoutMonitorInput[] | Prisma.ResponseUncheckedCreateWithoutMonitorInput[]
+  connectOrCreate?: Prisma.ResponseCreateOrConnectWithoutMonitorInput | Prisma.ResponseCreateOrConnectWithoutMonitorInput[]
+  createMany?: Prisma.ResponseCreateManyMonitorInputEnvelope
+  connect?: Prisma.ResponseWhereUniqueInput | Prisma.ResponseWhereUniqueInput[]
+}
+
+export type ResponseUpdateManyWithoutMonitorNestedInput = {
+  create?: Prisma.XOR<Prisma.ResponseCreateWithoutMonitorInput, Prisma.ResponseUncheckedCreateWithoutMonitorInput> | Prisma.ResponseCreateWithoutMonitorInput[] | Prisma.ResponseUncheckedCreateWithoutMonitorInput[]
+  connectOrCreate?: Prisma.ResponseCreateOrConnectWithoutMonitorInput | Prisma.ResponseCreateOrConnectWithoutMonitorInput[]
+  upsert?: Prisma.ResponseUpsertWithWhereUniqueWithoutMonitorInput | Prisma.ResponseUpsertWithWhereUniqueWithoutMonitorInput[]
+  createMany?: Prisma.ResponseCreateManyMonitorInputEnvelope
+  set?: Prisma.ResponseWhereUniqueInput | Prisma.ResponseWhereUniqueInput[]
+  disconnect?: Prisma.ResponseWhereUniqueInput | Prisma.ResponseWhereUniqueInput[]
+  delete?: Prisma.ResponseWhereUniqueInput | Prisma.ResponseWhereUniqueInput[]
+  connect?: Prisma.ResponseWhereUniqueInput | Prisma.ResponseWhereUniqueInput[]
+  update?: Prisma.ResponseUpdateWithWhereUniqueWithoutMonitorInput | Prisma.ResponseUpdateWithWhereUniqueWithoutMonitorInput[]
+  updateMany?: Prisma.ResponseUpdateManyWithWhereWithoutMonitorInput | Prisma.ResponseUpdateManyWithWhereWithoutMonitorInput[]
+  deleteMany?: Prisma.ResponseScalarWhereInput | Prisma.ResponseScalarWhereInput[]
+}
+
+export type ResponseUncheckedUpdateManyWithoutMonitorNestedInput = {
+  create?: Prisma.XOR<Prisma.ResponseCreateWithoutMonitorInput, Prisma.ResponseUncheckedCreateWithoutMonitorInput> | Prisma.ResponseCreateWithoutMonitorInput[] | Prisma.ResponseUncheckedCreateWithoutMonitorInput[]
+  connectOrCreate?: Prisma.ResponseCreateOrConnectWithoutMonitorInput | Prisma.ResponseCreateOrConnectWithoutMonitorInput[]
+  upsert?: Prisma.ResponseUpsertWithWhereUniqueWithoutMonitorInput | Prisma.ResponseUpsertWithWhereUniqueWithoutMonitorInput[]
+  createMany?: Prisma.ResponseCreateManyMonitorInputEnvelope
+  set?: Prisma.ResponseWhereUniqueInput | Prisma.ResponseWhereUniqueInput[]
+  disconnect?: Prisma.ResponseWhereUniqueInput | Prisma.ResponseWhereUniqueInput[]
+  delete?: Prisma.ResponseWhereUniqueInput | Prisma.ResponseWhereUniqueInput[]
+  connect?: Prisma.ResponseWhereUniqueInput | Prisma.ResponseWhereUniqueInput[]
+  update?: Prisma.ResponseUpdateWithWhereUniqueWithoutMonitorInput | Prisma.ResponseUpdateWithWhereUniqueWithoutMonitorInput[]
+  updateMany?: Prisma.ResponseUpdateManyWithWhereWithoutMonitorInput | Prisma.ResponseUpdateManyWithWhereWithoutMonitorInput[]
+  deleteMany?: Prisma.ResponseScalarWhereInput | Prisma.ResponseScalarWhereInput[]
+}
+
 export type NullableIntFieldUpdateOperationsInput = {
   set?: number | null
   increment?: number
@@ -467,15 +571,21 @@ export type ResponseCreateWithoutEndpointInput = {
   responseTime?: number | null
   status: string
   error?: string | null
+  responseBody?: string | null
+  responseHeaders?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
+  monitor?: Prisma.MonitorCreateNestedOneWithoutResponsesInput
 }
 
 export type ResponseUncheckedCreateWithoutEndpointInput = {
   id?: string
+  monitorId?: string | null
   statusCode?: number | null
   responseTime?: number | null
   status: string
   error?: string | null
+  responseBody?: string | null
+  responseHeaders?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
 
@@ -511,19 +621,75 @@ export type ResponseScalarWhereInput = {
   NOT?: Prisma.ResponseScalarWhereInput | Prisma.ResponseScalarWhereInput[]
   id?: Prisma.StringFilter<"Response"> | string
   endpointId?: Prisma.StringFilter<"Response"> | string
+  monitorId?: Prisma.StringNullableFilter<"Response"> | string | null
   statusCode?: Prisma.IntNullableFilter<"Response"> | number | null
   responseTime?: Prisma.IntNullableFilter<"Response"> | number | null
   status?: Prisma.StringFilter<"Response"> | string
   error?: Prisma.StringNullableFilter<"Response"> | string | null
+  responseBody?: Prisma.StringNullableFilter<"Response"> | string | null
+  responseHeaders?: Prisma.JsonNullableFilter<"Response">
   createdAt?: Prisma.DateTimeFilter<"Response"> | Date | string
 }
 
-export type ResponseCreateManyEndpointInput = {
+export type ResponseCreateWithoutMonitorInput = {
   id?: string
   statusCode?: number | null
   responseTime?: number | null
   status: string
   error?: string | null
+  responseBody?: string | null
+  responseHeaders?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  endpoint: Prisma.EndpointCreateNestedOneWithoutResponsesInput
+}
+
+export type ResponseUncheckedCreateWithoutMonitorInput = {
+  id?: string
+  endpointId: string
+  statusCode?: number | null
+  responseTime?: number | null
+  status: string
+  error?: string | null
+  responseBody?: string | null
+  responseHeaders?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+}
+
+export type ResponseCreateOrConnectWithoutMonitorInput = {
+  where: Prisma.ResponseWhereUniqueInput
+  create: Prisma.XOR<Prisma.ResponseCreateWithoutMonitorInput, Prisma.ResponseUncheckedCreateWithoutMonitorInput>
+}
+
+export type ResponseCreateManyMonitorInputEnvelope = {
+  data: Prisma.ResponseCreateManyMonitorInput | Prisma.ResponseCreateManyMonitorInput[]
+  skipDuplicates?: boolean
+}
+
+export type ResponseUpsertWithWhereUniqueWithoutMonitorInput = {
+  where: Prisma.ResponseWhereUniqueInput
+  update: Prisma.XOR<Prisma.ResponseUpdateWithoutMonitorInput, Prisma.ResponseUncheckedUpdateWithoutMonitorInput>
+  create: Prisma.XOR<Prisma.ResponseCreateWithoutMonitorInput, Prisma.ResponseUncheckedCreateWithoutMonitorInput>
+}
+
+export type ResponseUpdateWithWhereUniqueWithoutMonitorInput = {
+  where: Prisma.ResponseWhereUniqueInput
+  data: Prisma.XOR<Prisma.ResponseUpdateWithoutMonitorInput, Prisma.ResponseUncheckedUpdateWithoutMonitorInput>
+}
+
+export type ResponseUpdateManyWithWhereWithoutMonitorInput = {
+  where: Prisma.ResponseScalarWhereInput
+  data: Prisma.XOR<Prisma.ResponseUpdateManyMutationInput, Prisma.ResponseUncheckedUpdateManyWithoutMonitorInput>
+}
+
+export type ResponseCreateManyEndpointInput = {
+  id?: string
+  monitorId?: string | null
+  statusCode?: number | null
+  responseTime?: number | null
+  status: string
+  error?: string | null
+  responseBody?: string | null
+  responseHeaders?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
 
@@ -533,24 +699,81 @@ export type ResponseUpdateWithoutEndpointInput = {
   responseTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   error?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responseBody?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responseHeaders?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  monitor?: Prisma.MonitorUpdateOneWithoutResponsesNestedInput
 }
 
 export type ResponseUncheckedUpdateWithoutEndpointInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  monitorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statusCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   responseTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   error?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responseBody?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responseHeaders?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ResponseUncheckedUpdateManyWithoutEndpointInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  monitorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statusCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   responseTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   error?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responseBody?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responseHeaders?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ResponseCreateManyMonitorInput = {
+  id?: string
+  endpointId: string
+  statusCode?: number | null
+  responseTime?: number | null
+  status: string
+  error?: string | null
+  responseBody?: string | null
+  responseHeaders?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+}
+
+export type ResponseUpdateWithoutMonitorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  statusCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  responseTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  error?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responseBody?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responseHeaders?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endpoint?: Prisma.EndpointUpdateOneRequiredWithoutResponsesNestedInput
+}
+
+export type ResponseUncheckedUpdateWithoutMonitorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  endpointId?: Prisma.StringFieldUpdateOperationsInput | string
+  statusCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  responseTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  error?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responseBody?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responseHeaders?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ResponseUncheckedUpdateManyWithoutMonitorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  endpointId?: Prisma.StringFieldUpdateOperationsInput | string
+  statusCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  responseTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  error?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responseBody?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  responseHeaders?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -559,69 +782,91 @@ export type ResponseUncheckedUpdateManyWithoutEndpointInput = {
 export type ResponseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   endpointId?: boolean
+  monitorId?: boolean
   statusCode?: boolean
   responseTime?: boolean
   status?: boolean
   error?: boolean
+  responseBody?: boolean
+  responseHeaders?: boolean
   createdAt?: boolean
   endpoint?: boolean | Prisma.EndpointDefaultArgs<ExtArgs>
+  monitor?: boolean | Prisma.Response$monitorArgs<ExtArgs>
 }, ExtArgs["result"]["response"]>
 
 export type ResponseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   endpointId?: boolean
+  monitorId?: boolean
   statusCode?: boolean
   responseTime?: boolean
   status?: boolean
   error?: boolean
+  responseBody?: boolean
+  responseHeaders?: boolean
   createdAt?: boolean
   endpoint?: boolean | Prisma.EndpointDefaultArgs<ExtArgs>
+  monitor?: boolean | Prisma.Response$monitorArgs<ExtArgs>
 }, ExtArgs["result"]["response"]>
 
 export type ResponseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   endpointId?: boolean
+  monitorId?: boolean
   statusCode?: boolean
   responseTime?: boolean
   status?: boolean
   error?: boolean
+  responseBody?: boolean
+  responseHeaders?: boolean
   createdAt?: boolean
   endpoint?: boolean | Prisma.EndpointDefaultArgs<ExtArgs>
+  monitor?: boolean | Prisma.Response$monitorArgs<ExtArgs>
 }, ExtArgs["result"]["response"]>
 
 export type ResponseSelectScalar = {
   id?: boolean
   endpointId?: boolean
+  monitorId?: boolean
   statusCode?: boolean
   responseTime?: boolean
   status?: boolean
   error?: boolean
+  responseBody?: boolean
+  responseHeaders?: boolean
   createdAt?: boolean
 }
 
-export type ResponseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "endpointId" | "statusCode" | "responseTime" | "status" | "error" | "createdAt", ExtArgs["result"]["response"]>
+export type ResponseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "endpointId" | "monitorId" | "statusCode" | "responseTime" | "status" | "error" | "responseBody" | "responseHeaders" | "createdAt", ExtArgs["result"]["response"]>
 export type ResponseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   endpoint?: boolean | Prisma.EndpointDefaultArgs<ExtArgs>
+  monitor?: boolean | Prisma.Response$monitorArgs<ExtArgs>
 }
 export type ResponseIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   endpoint?: boolean | Prisma.EndpointDefaultArgs<ExtArgs>
+  monitor?: boolean | Prisma.Response$monitorArgs<ExtArgs>
 }
 export type ResponseIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   endpoint?: boolean | Prisma.EndpointDefaultArgs<ExtArgs>
+  monitor?: boolean | Prisma.Response$monitorArgs<ExtArgs>
 }
 
 export type $ResponsePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Response"
   objects: {
     endpoint: Prisma.$EndpointPayload<ExtArgs>
+    monitor: Prisma.$MonitorPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     endpointId: string
+    monitorId: string | null
     statusCode: number | null
     responseTime: number | null
     status: string
     error: string | null
+    responseBody: string | null
+    responseHeaders: runtime.JsonValue | null
     createdAt: Date
   }, ExtArgs["result"]["response"]>
   composites: {}
@@ -1018,6 +1263,7 @@ readonly fields: ResponseFieldRefs;
 export interface Prisma__ResponseClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   endpoint<T extends Prisma.EndpointDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EndpointDefaultArgs<ExtArgs>>): Prisma.Prisma__EndpointClient<runtime.Types.Result.GetResult<Prisma.$EndpointPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  monitor<T extends Prisma.Response$monitorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Response$monitorArgs<ExtArgs>>): Prisma.Prisma__MonitorClient<runtime.Types.Result.GetResult<Prisma.$MonitorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1049,10 +1295,13 @@ export interface Prisma__ResponseClient<T, Null = never, ExtArgs extends runtime
 export interface ResponseFieldRefs {
   readonly id: Prisma.FieldRef<"Response", 'String'>
   readonly endpointId: Prisma.FieldRef<"Response", 'String'>
+  readonly monitorId: Prisma.FieldRef<"Response", 'String'>
   readonly statusCode: Prisma.FieldRef<"Response", 'Int'>
   readonly responseTime: Prisma.FieldRef<"Response", 'Int'>
   readonly status: Prisma.FieldRef<"Response", 'String'>
   readonly error: Prisma.FieldRef<"Response", 'String'>
+  readonly responseBody: Prisma.FieldRef<"Response", 'String'>
+  readonly responseHeaders: Prisma.FieldRef<"Response", 'Json'>
   readonly createdAt: Prisma.FieldRef<"Response", 'DateTime'>
 }
     
@@ -1452,6 +1701,25 @@ export type ResponseDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Limit how many Responses to delete.
    */
   limit?: number
+}
+
+/**
+ * Response.monitor
+ */
+export type Response$monitorArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Monitor
+   */
+  select?: Prisma.MonitorSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Monitor
+   */
+  omit?: Prisma.MonitorOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MonitorInclude<ExtArgs> | null
+  where?: Prisma.MonitorWhereInput
 }
 
 /**

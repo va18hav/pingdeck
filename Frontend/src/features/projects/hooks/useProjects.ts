@@ -88,3 +88,49 @@ export const useDeleteEndpoint = (projectId: string) => {
         }
     });
 };
+
+export const useTestEndpoint = () => {
+    return useMutation({
+        mutationFn: projectService.testEndpoint,
+        onError: (err: any) => {
+            const message = err.response?.data?.message || 'Failed to execute test check';
+            toast.error(message);
+        }
+    });
+};
+
+export const useUpdateEndpoint = (projectId: string, onSuccessCb?: () => void) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ id, data }: { id: string; data: any }) => projectService.updateEndpoint(id, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['endpoints', projectId] });
+            toast.success('Endpoint updated successfully!');
+            if (onSuccessCb) onSuccessCb();
+        },
+        onError: (err: any) => {
+            const message = err.response?.data?.message || 'Failed to update endpoint';
+            toast.error(message);
+        }
+    });
+};
+
+export const useGetProjectCookies = (projectId: string) => {
+    return useQuery({
+        queryKey: ['cookies', projectId],
+        queryFn: () => projectService.getProjectCookies(projectId),
+        enabled: !!projectId
+    });
+};
+
+export const useDeleteProjectCookie = (projectId: string) => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (name?: string) => projectService.deleteProjectCookie(projectId, name),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['cookies', projectId] });
+            toast.success('Cookies updated successfully');
+        }
+    });
+};

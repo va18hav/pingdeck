@@ -387,6 +387,8 @@ export const ModelName = {
   User: 'User',
   Project: 'Project',
   Endpoint: 'Endpoint',
+  Monitor: 'Monitor',
+  Folder: 'Folder',
   Response: 'Response',
   Worker: 'Worker'
 } as const
@@ -404,7 +406,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "project" | "endpoint" | "response" | "worker"
+    modelProps: "user" | "project" | "endpoint" | "monitor" | "folder" | "response" | "worker"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -630,6 +632,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Monitor: {
+      payload: Prisma.$MonitorPayload<ExtArgs>
+      fields: Prisma.MonitorFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MonitorFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MonitorFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorPayload>
+        }
+        findFirst: {
+          args: Prisma.MonitorFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MonitorFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorPayload>
+        }
+        findMany: {
+          args: Prisma.MonitorFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorPayload>[]
+        }
+        create: {
+          args: Prisma.MonitorCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorPayload>
+        }
+        createMany: {
+          args: Prisma.MonitorCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MonitorCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorPayload>[]
+        }
+        delete: {
+          args: Prisma.MonitorDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorPayload>
+        }
+        update: {
+          args: Prisma.MonitorUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorPayload>
+        }
+        deleteMany: {
+          args: Prisma.MonitorDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MonitorUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MonitorUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorPayload>[]
+        }
+        upsert: {
+          args: Prisma.MonitorUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorPayload>
+        }
+        aggregate: {
+          args: Prisma.MonitorAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMonitor>
+        }
+        groupBy: {
+          args: Prisma.MonitorGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MonitorGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MonitorCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MonitorCountAggregateOutputType> | number
+        }
+      }
+    }
+    Folder: {
+      payload: Prisma.$FolderPayload<ExtArgs>
+      fields: Prisma.FolderFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FolderFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FolderFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderPayload>
+        }
+        findFirst: {
+          args: Prisma.FolderFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FolderFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderPayload>
+        }
+        findMany: {
+          args: Prisma.FolderFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderPayload>[]
+        }
+        create: {
+          args: Prisma.FolderCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderPayload>
+        }
+        createMany: {
+          args: Prisma.FolderCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FolderCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderPayload>[]
+        }
+        delete: {
+          args: Prisma.FolderDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderPayload>
+        }
+        update: {
+          args: Prisma.FolderUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderPayload>
+        }
+        deleteMany: {
+          args: Prisma.FolderDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FolderUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FolderUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderPayload>[]
+        }
+        upsert: {
+          args: Prisma.FolderUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderPayload>
+        }
+        aggregate: {
+          args: Prisma.FolderAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFolder>
+        }
+        groupBy: {
+          args: Prisma.FolderGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FolderGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FolderCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FolderCountAggregateOutputType> | number
+        }
+      }
+    }
     Response: {
       payload: Prisma.$ResponsePayload<ExtArgs>
       fields: Prisma.ResponseFieldRefs
@@ -845,10 +995,12 @@ export const EndpointScalarFieldEnum = {
   name: 'name',
   url: 'url',
   method: 'method',
-  interval: 'interval',
-  status: 'status',
+  headers: 'headers',
+  body: 'body',
+  queryParams: 'queryParams',
+  auth: 'auth',
   projectId: 'projectId',
-  repeatJobKey: 'repeatJobKey',
+  folderId: 'folderId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -856,13 +1008,41 @@ export const EndpointScalarFieldEnum = {
 export type EndpointScalarFieldEnum = (typeof EndpointScalarFieldEnum)[keyof typeof EndpointScalarFieldEnum]
 
 
+export const MonitorScalarFieldEnum = {
+  id: 'id',
+  interval: 'interval',
+  status: 'status',
+  repeatJobKey: 'repeatJobKey',
+  endpointId: 'endpointId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MonitorScalarFieldEnum = (typeof MonitorScalarFieldEnum)[keyof typeof MonitorScalarFieldEnum]
+
+
+export const FolderScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  projectId: 'projectId',
+  parentId: 'parentId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FolderScalarFieldEnum = (typeof FolderScalarFieldEnum)[keyof typeof FolderScalarFieldEnum]
+
+
 export const ResponseScalarFieldEnum = {
   id: 'id',
   endpointId: 'endpointId',
+  monitorId: 'monitorId',
   statusCode: 'statusCode',
   responseTime: 'responseTime',
   status: 'status',
   error: 'error',
+  responseBody: 'responseBody',
+  responseHeaders: 'responseHeaders',
   createdAt: 'createdAt'
 } as const
 
@@ -888,6 +1068,14 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -902,6 +1090,15 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 
@@ -935,6 +1132,20 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'DateTime[]'
  */
 export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -1092,6 +1303,8 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   project?: Prisma.ProjectOmit
   endpoint?: Prisma.EndpointOmit
+  monitor?: Prisma.MonitorOmit
+  folder?: Prisma.FolderOmit
   response?: Prisma.ResponseOmit
   worker?: Prisma.WorkerOmit
 }
