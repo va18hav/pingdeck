@@ -108,6 +108,7 @@ export const EndpointScalarFieldEnum = {
   body: 'body',
   queryParams: 'queryParams',
   auth: 'auth',
+  sslVerification: 'sslVerification',
   projectId: 'projectId',
   folderId: 'folderId',
   createdAt: 'createdAt',

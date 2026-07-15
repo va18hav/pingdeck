@@ -27,6 +27,7 @@ export const createEndpointSchema = z.object({
   method: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS']).optional().default('GET'),
   projectId: z.string().uuid('Invalid Project ID format'),
   folderId: z.string().uuid('Invalid Folder ID format').optional().nullable(),
+  sslVerification: z.boolean().default(true).optional(),
   
   // Prevent OOM attacks by limiting the number of headers
   headers: z.record(z.string().max(1000, 'Header value too long'))
@@ -64,6 +65,7 @@ export const updateEndpointSchema = z.object({
   url: z.string().url('Invalid URL format').max(2048, 'URL is too long').optional(),
   method: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS']).optional(),
   folderId: z.string().uuid('Invalid Folder ID format').optional().nullable(),
+  sslVerification: z.boolean().default(true).optional(),
   headers: z.record(z.string().max(1000, 'Header value too long'))
     .refine(val => Object.keys(val).length <= 50, 'Too many headers')
     .optional().nullable(),

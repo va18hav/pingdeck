@@ -10,6 +10,7 @@ export const createEndpoint = async (data: {
     body?: string | null;
     queryParams?: any;
     auth?: any;
+    sslVerification?: boolean;
 }) => {
     return await prisma.endpoint.create({
         data: {
@@ -31,6 +32,7 @@ export const createEndpoint = async (data: {
             body: true,
             queryParams: true,
             auth: true,
+            sslVerification: true,
         }
     });
 };
@@ -82,6 +84,7 @@ export const updateEndpoint = async (id: string, data: {
     body?: string | null;
     queryParams?: any;
     auth?: any;
+    sslVerification?: boolean;
 }) => {
     return await prisma.endpoint.update({
         where: { id },
@@ -93,7 +96,8 @@ export const updateEndpoint = async (id: string, data: {
             headers: data.headers ?? undefined,
             queryParams: data.queryParams ?? undefined,
             auth: data.auth ?? undefined,
-            body: data.body ?? undefined
+            body: data.body ?? undefined,
+            sslVerification: data.sslVerification
         }
     });
 };

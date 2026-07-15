@@ -23,7 +23,7 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({ endpoint, projectId 
     // Core states
     const [method, setMethod] = useState(endpoint.method);
     const [url, setUrl] = useState(endpoint.url);
-    const [activeTab, setActiveTab] = useState<'params' | 'headers' | 'auth' | 'body' | 'monitor'>('params');
+    const [activeTab, setActiveTab] = useState<'params' | 'headers' | 'auth' | 'body' | 'monitor' | 'settings'>('params');
 
     // Key-value editors states
     const [params, setParams] = useState<KeyValueItem[]>([]);
@@ -43,6 +43,7 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({ endpoint, projectId 
     const [loginMethod, setLoginMethod] = useState('POST');
     const [loginHeaders, setLoginHeaders] = useState('{\n  "Content-Type": "application/json"\n}');
     const [loginBody, setLoginBody] = useState('');
+    const [sslVerification, setSslVerification] = useState(true);
 
     const navigate = useNavigate();
 
@@ -93,6 +94,7 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({ endpoint, projectId 
         setUrl(endpoint.url);
         setBody(endpoint.body || '');
         setTestResult(null);
+        setSslVerification(endpoint.sslVerification !== false);
 
         // Auto-detect body type
         if (!endpoint.body) {
@@ -284,7 +286,8 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({ endpoint, projectId 
             body: bodyType === 'none' ? null : (body || null),
             headers: Object.keys(headersRecord).length > 0 ? headersRecord : null,
             queryParams: Object.keys(paramsRecord).length > 0 ? paramsRecord : null,
-            auth: authPayload
+            auth: authPayload,
+            sslVerification
         };
     };
 
@@ -405,7 +408,7 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({ endpoint, projectId 
             {/* Config Panel Tabs */}
             <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden flex flex-col h-[280px] shrink-0">
                 <div className="flex border-b border-slate-100 bg-slate-50/50 px-4 shrink-0">
-                    {(['params', 'headers', 'auth', 'body'] as const).map(tab => (
+                    {(['params', 'headers', 'auth', 'body', 'settings'] as const).map(tab => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
@@ -627,6 +630,29 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({ endpoint, projectId 
                                         className="w-full p-4 border border-slate-200 rounded-xl font-mono text-xs focus:outline-none focus:border-blue-500 text-slate-800 bg-slate-50/50 min-h-[140px] resize-none"
                                     />
                                 )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Tab 5: Settings */}
+                    {activeTab === 'settings' && (
+                        <div className="space-y-4 max-w-xl animate-fade-in text-slate-700">
+                            <div className="flex items-start space-x-3 bg-slate-50/50 p-4 border border-slate-200/60 rounded-xl">
+                                <input
+                                    type="checkbox"
+                                    id="sslVerification"
+                                    checked={sslVerification}
+                                    onChange={(e) => setSslVerification(e.target.checked)}
+                                    className="mt-1 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                                />
+                                <div className="space-y-0.5 select-none">
+                                    <label htmlFor="sslVerification" className="text-xs font-bold text-slate-700 cursor-pointer">
+                                        Enable SSL Certificate Verification
+                                    </label>
+                                    <p className="text-[11px] text-slate-400 leading-normal">
+                                        Validate target server SSL/TLS certificates. Uncheck this to ignore certificate errors for self-signed certificates in local (e.g. host.docker.internal) or staging environments.
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     )}

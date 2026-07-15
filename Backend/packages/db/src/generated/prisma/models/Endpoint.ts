@@ -30,6 +30,7 @@ export type EndpointMinAggregateOutputType = {
   url: string | null
   method: string | null
   body: string | null
+  sslVerification: boolean | null
   projectId: string | null
   folderId: string | null
   createdAt: Date | null
@@ -42,6 +43,7 @@ export type EndpointMaxAggregateOutputType = {
   url: string | null
   method: string | null
   body: string | null
+  sslVerification: boolean | null
   projectId: string | null
   folderId: string | null
   createdAt: Date | null
@@ -57,6 +59,7 @@ export type EndpointCountAggregateOutputType = {
   body: number
   queryParams: number
   auth: number
+  sslVerification: number
   projectId: number
   folderId: number
   createdAt: number
@@ -71,6 +74,7 @@ export type EndpointMinAggregateInputType = {
   url?: true
   method?: true
   body?: true
+  sslVerification?: true
   projectId?: true
   folderId?: true
   createdAt?: true
@@ -83,6 +87,7 @@ export type EndpointMaxAggregateInputType = {
   url?: true
   method?: true
   body?: true
+  sslVerification?: true
   projectId?: true
   folderId?: true
   createdAt?: true
@@ -98,6 +103,7 @@ export type EndpointCountAggregateInputType = {
   body?: true
   queryParams?: true
   auth?: true
+  sslVerification?: true
   projectId?: true
   folderId?: true
   createdAt?: true
@@ -186,6 +192,7 @@ export type EndpointGroupByOutputType = {
   body: string | null
   queryParams: runtime.JsonValue | null
   auth: runtime.JsonValue | null
+  sslVerification: boolean
   projectId: string
   folderId: string | null
   createdAt: Date
@@ -222,6 +229,7 @@ export type EndpointWhereInput = {
   body?: Prisma.StringNullableFilter<"Endpoint"> | string | null
   queryParams?: Prisma.JsonNullableFilter<"Endpoint">
   auth?: Prisma.JsonNullableFilter<"Endpoint">
+  sslVerification?: Prisma.BoolFilter<"Endpoint"> | boolean
   projectId?: Prisma.StringFilter<"Endpoint"> | string
   folderId?: Prisma.StringNullableFilter<"Endpoint"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Endpoint"> | Date | string
@@ -241,6 +249,7 @@ export type EndpointOrderByWithRelationInput = {
   body?: Prisma.SortOrderInput | Prisma.SortOrder
   queryParams?: Prisma.SortOrderInput | Prisma.SortOrder
   auth?: Prisma.SortOrderInput | Prisma.SortOrder
+  sslVerification?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   folderId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -263,6 +272,7 @@ export type EndpointWhereUniqueInput = Prisma.AtLeast<{
   body?: Prisma.StringNullableFilter<"Endpoint"> | string | null
   queryParams?: Prisma.JsonNullableFilter<"Endpoint">
   auth?: Prisma.JsonNullableFilter<"Endpoint">
+  sslVerification?: Prisma.BoolFilter<"Endpoint"> | boolean
   projectId?: Prisma.StringFilter<"Endpoint"> | string
   folderId?: Prisma.StringNullableFilter<"Endpoint"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Endpoint"> | Date | string
@@ -282,6 +292,7 @@ export type EndpointOrderByWithAggregationInput = {
   body?: Prisma.SortOrderInput | Prisma.SortOrder
   queryParams?: Prisma.SortOrderInput | Prisma.SortOrder
   auth?: Prisma.SortOrderInput | Prisma.SortOrder
+  sslVerification?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   folderId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -303,6 +314,7 @@ export type EndpointScalarWhereWithAggregatesInput = {
   body?: Prisma.StringNullableWithAggregatesFilter<"Endpoint"> | string | null
   queryParams?: Prisma.JsonNullableWithAggregatesFilter<"Endpoint">
   auth?: Prisma.JsonNullableWithAggregatesFilter<"Endpoint">
+  sslVerification?: Prisma.BoolWithAggregatesFilter<"Endpoint"> | boolean
   projectId?: Prisma.StringWithAggregatesFilter<"Endpoint"> | string
   folderId?: Prisma.StringNullableWithAggregatesFilter<"Endpoint"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Endpoint"> | Date | string
@@ -318,6 +330,7 @@ export type EndpointCreateInput = {
   body?: string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutEndpointsInput
@@ -335,6 +348,7 @@ export type EndpointUncheckedCreateInput = {
   body?: string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: boolean
   projectId: string
   folderId?: string | null
   createdAt?: Date | string
@@ -352,6 +366,7 @@ export type EndpointUpdateInput = {
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutEndpointsNestedInput
@@ -369,6 +384,7 @@ export type EndpointUncheckedUpdateInput = {
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: Prisma.BoolFieldUpdateOperationsInput | boolean
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -386,6 +402,7 @@ export type EndpointCreateManyInput = {
   body?: string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: boolean
   projectId: string
   folderId?: string | null
   createdAt?: Date | string
@@ -401,6 +418,7 @@ export type EndpointUpdateManyMutationInput = {
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -414,6 +432,7 @@ export type EndpointUncheckedUpdateManyInput = {
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: Prisma.BoolFieldUpdateOperationsInput | boolean
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -439,6 +458,7 @@ export type EndpointCountOrderByAggregateInput = {
   body?: Prisma.SortOrder
   queryParams?: Prisma.SortOrder
   auth?: Prisma.SortOrder
+  sslVerification?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   folderId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -451,6 +471,7 @@ export type EndpointMaxOrderByAggregateInput = {
   url?: Prisma.SortOrder
   method?: Prisma.SortOrder
   body?: Prisma.SortOrder
+  sslVerification?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   folderId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -463,6 +484,7 @@ export type EndpointMinOrderByAggregateInput = {
   url?: Prisma.SortOrder
   method?: Prisma.SortOrder
   body?: Prisma.SortOrder
+  sslVerification?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   folderId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -514,6 +536,10 @@ export type EndpointUncheckedUpdateManyWithoutProjectNestedInput = {
   update?: Prisma.EndpointUpdateWithWhereUniqueWithoutProjectInput | Prisma.EndpointUpdateWithWhereUniqueWithoutProjectInput[]
   updateMany?: Prisma.EndpointUpdateManyWithWhereWithoutProjectInput | Prisma.EndpointUpdateManyWithWhereWithoutProjectInput[]
   deleteMany?: Prisma.EndpointScalarWhereInput | Prisma.EndpointScalarWhereInput[]
+}
+
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
 }
 
 export type EndpointCreateNestedOneWithoutMonitorsInput = {
@@ -595,6 +621,7 @@ export type EndpointCreateWithoutProjectInput = {
   body?: string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   folder?: Prisma.FolderCreateNestedOneWithoutEndpointsInput
@@ -611,6 +638,7 @@ export type EndpointUncheckedCreateWithoutProjectInput = {
   body?: string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: boolean
   folderId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -656,6 +684,7 @@ export type EndpointScalarWhereInput = {
   body?: Prisma.StringNullableFilter<"Endpoint"> | string | null
   queryParams?: Prisma.JsonNullableFilter<"Endpoint">
   auth?: Prisma.JsonNullableFilter<"Endpoint">
+  sslVerification?: Prisma.BoolFilter<"Endpoint"> | boolean
   projectId?: Prisma.StringFilter<"Endpoint"> | string
   folderId?: Prisma.StringNullableFilter<"Endpoint"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Endpoint"> | Date | string
@@ -671,6 +700,7 @@ export type EndpointCreateWithoutMonitorsInput = {
   body?: string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutEndpointsInput
@@ -687,6 +717,7 @@ export type EndpointUncheckedCreateWithoutMonitorsInput = {
   body?: string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: boolean
   projectId: string
   folderId?: string | null
   createdAt?: Date | string
@@ -719,6 +750,7 @@ export type EndpointUpdateWithoutMonitorsInput = {
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutEndpointsNestedInput
@@ -735,6 +767,7 @@ export type EndpointUncheckedUpdateWithoutMonitorsInput = {
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: Prisma.BoolFieldUpdateOperationsInput | boolean
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -751,6 +784,7 @@ export type EndpointCreateWithoutFolderInput = {
   body?: string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutEndpointsInput
@@ -767,6 +801,7 @@ export type EndpointUncheckedCreateWithoutFolderInput = {
   body?: string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: boolean
   projectId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -809,6 +844,7 @@ export type EndpointCreateWithoutResponsesInput = {
   body?: string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutEndpointsInput
@@ -825,6 +861,7 @@ export type EndpointUncheckedCreateWithoutResponsesInput = {
   body?: string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: boolean
   projectId: string
   folderId?: string | null
   createdAt?: Date | string
@@ -857,6 +894,7 @@ export type EndpointUpdateWithoutResponsesInput = {
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutEndpointsNestedInput
@@ -873,6 +911,7 @@ export type EndpointUncheckedUpdateWithoutResponsesInput = {
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: Prisma.BoolFieldUpdateOperationsInput | boolean
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -889,6 +928,7 @@ export type EndpointCreateManyProjectInput = {
   body?: string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: boolean
   folderId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -903,6 +943,7 @@ export type EndpointUpdateWithoutProjectInput = {
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   folder?: Prisma.FolderUpdateOneWithoutEndpointsNestedInput
@@ -919,6 +960,7 @@ export type EndpointUncheckedUpdateWithoutProjectInput = {
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: Prisma.BoolFieldUpdateOperationsInput | boolean
   folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -935,6 +977,7 @@ export type EndpointUncheckedUpdateManyWithoutProjectInput = {
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: Prisma.BoolFieldUpdateOperationsInput | boolean
   folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -949,6 +992,7 @@ export type EndpointCreateManyFolderInput = {
   body?: string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: boolean
   projectId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -963,6 +1007,7 @@ export type EndpointUpdateWithoutFolderInput = {
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutEndpointsNestedInput
@@ -979,6 +1024,7 @@ export type EndpointUncheckedUpdateWithoutFolderInput = {
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: Prisma.BoolFieldUpdateOperationsInput | boolean
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -995,6 +1041,7 @@ export type EndpointUncheckedUpdateManyWithoutFolderInput = {
   body?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queryParams?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   auth?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sslVerification?: Prisma.BoolFieldUpdateOperationsInput | boolean
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1049,6 +1096,7 @@ export type EndpointSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   body?: boolean
   queryParams?: boolean
   auth?: boolean
+  sslVerification?: boolean
   projectId?: boolean
   folderId?: boolean
   createdAt?: boolean
@@ -1069,6 +1117,7 @@ export type EndpointSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   body?: boolean
   queryParams?: boolean
   auth?: boolean
+  sslVerification?: boolean
   projectId?: boolean
   folderId?: boolean
   createdAt?: boolean
@@ -1086,6 +1135,7 @@ export type EndpointSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   body?: boolean
   queryParams?: boolean
   auth?: boolean
+  sslVerification?: boolean
   projectId?: boolean
   folderId?: boolean
   createdAt?: boolean
@@ -1103,13 +1153,14 @@ export type EndpointSelectScalar = {
   body?: boolean
   queryParams?: boolean
   auth?: boolean
+  sslVerification?: boolean
   projectId?: boolean
   folderId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type EndpointOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "url" | "method" | "headers" | "body" | "queryParams" | "auth" | "projectId" | "folderId" | "createdAt" | "updatedAt", ExtArgs["result"]["endpoint"]>
+export type EndpointOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "url" | "method" | "headers" | "body" | "queryParams" | "auth" | "sslVerification" | "projectId" | "folderId" | "createdAt" | "updatedAt", ExtArgs["result"]["endpoint"]>
 export type EndpointInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   folder?: boolean | Prisma.Endpoint$folderArgs<ExtArgs>
@@ -1143,6 +1194,7 @@ export type $EndpointPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     body: string | null
     queryParams: runtime.JsonValue | null
     auth: runtime.JsonValue | null
+    sslVerification: boolean
     projectId: string
     folderId: string | null
     createdAt: Date
@@ -1582,6 +1634,7 @@ export interface EndpointFieldRefs {
   readonly body: Prisma.FieldRef<"Endpoint", 'String'>
   readonly queryParams: Prisma.FieldRef<"Endpoint", 'Json'>
   readonly auth: Prisma.FieldRef<"Endpoint", 'Json'>
+  readonly sslVerification: Prisma.FieldRef<"Endpoint", 'Boolean'>
   readonly projectId: Prisma.FieldRef<"Endpoint", 'String'>
   readonly folderId: Prisma.FieldRef<"Endpoint", 'String'>
   readonly createdAt: Prisma.FieldRef<"Endpoint", 'DateTime'>

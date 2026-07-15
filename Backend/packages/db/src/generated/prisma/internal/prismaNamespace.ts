@@ -999,6 +999,7 @@ export const EndpointScalarFieldEnum = {
   body: 'body',
   queryParams: 'queryParams',
   auth: 'auth',
+  sslVerification: 'sslVerification',
   projectId: 'projectId',
   folderId: 'folderId',
   createdAt: 'createdAt',
@@ -1146,6 +1147,13 @@ export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'J
  * Reference to a field of type 'QueryMode'
  */
 export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 

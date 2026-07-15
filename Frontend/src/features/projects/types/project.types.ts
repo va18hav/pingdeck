@@ -19,6 +19,7 @@ export interface Endpoint {
     queryParams?: Record<string, string> | null;
     auth?: any | null;
     monitors?: Array<{ id: string; interval: number; status: string }>;
+    sslVerification?: boolean;
     createdAt: string;
 }
 

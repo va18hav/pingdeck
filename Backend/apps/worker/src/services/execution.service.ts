@@ -8,6 +8,7 @@ import { redis } from "../lib/redis.js";
 import { CookieJar } from "../utils/cookieJar.js";
 import { applyAuth } from "../utils/auth.registry.js";
 import { prisma } from 'db';
+import { Agent } from 'undici';
 
 interface ExecutionJob {
     id: string;
@@ -16,7 +17,7 @@ interface ExecutionJob {
     userId?: string;
 }
 
-const performAutoLogin = async (endpointId: string, loginConfig: any, cookieKey: string, cookieJar: CookieJar) => {
+const performAutoLogin = async (endpointId: string, loginConfig: any, cookieKey: string, cookieJar: CookieJar, sslVerification: boolean = true) => {
     logger.info({ endpointId }, `Auto-login triggered for monitored endpoint.`);
     try {
         const loginHeaders = buildHeaders(loginConfig.headers, null, loginConfig.body);
@@ -29,7 +30,17 @@ const performAutoLogin = async (endpointId: string, loginConfig: any, cookieKey:
         }
 
         const loginStart = Date.now();
-        const loginRes = await fetch(loginConfig.url, loginOptions);
+        
+        let dispatcher = undefined;
+        if (sslVerification === false) {
+            dispatcher = new Agent({
+                connect: {
+                    rejectUnauthorized: false
+                }
+            });
+        }
+        
+        const loginRes = await fetch(loginConfig.url, { ...loginOptions, dispatcher } as any);
         const loginTime = Date.now() - loginStart;
 
         if (loginRes.ok) {
@@ -120,7 +131,7 @@ const handlePingEndpointJob = async (job: ExecutionJob) => {
         if (ttl < threshold) {
             logger.info({ endpointId: endpoint.id, ttl }, `Monitor session cookies are expired or expiring. Refreshing...`);
             loginAttempted = true;
-            await performAutoLogin(endpoint.id, auth.loginConfig, cookieKey, cookieJar);
+            await performAutoLogin(endpoint.id, auth.loginConfig, cookieKey, cookieJar, endpoint.sslVerification !== false);
         }
     }
 
@@ -162,7 +173,16 @@ const handlePingEndpointJob = async (job: ExecutionJob) => {
         const timeoutId = setTimeout(() => controller.abort(), 10000);
         requestOptions.signal = controller.signal;
 
-        let res = await fetch(url, requestOptions);
+        let dispatcher = undefined;
+        if (endpoint.sslVerification === false) {
+            dispatcher = new Agent({
+                connect: {
+                    rejectUnauthorized: false
+                }
+            });
+        }
+
+        let res = await fetch(url, { ...requestOptions, dispatcher } as any);
         clearTimeout(timeoutId);
         
         statusCode = res.status;
@@ -173,7 +193,7 @@ const handlePingEndpointJob = async (job: ExecutionJob) => {
         if (statusCode === 401 && hasAutoLogin && !loginAttempted) {
             loginAttempted = true;
             logger.info({ endpointId: endpoint.id }, `API returned 401 Unauthorized. Triggering self-healing login retry...`);
-            const loginSuccess = await performAutoLogin(endpoint.id, auth.loginConfig, cookieKey, cookieJar);
+            const loginSuccess = await performAutoLogin(endpoint.id, auth.loginConfig, cookieKey, cookieJar, endpoint.sslVerification !== false);
             if (loginSuccess) {
                 sessionRefreshed = true;
                 // Retry the original request with refreshed cookies
@@ -184,7 +204,7 @@ const handlePingEndpointJob = async (job: ExecutionJob) => {
                 }
                 
                 const retryStart = Date.now();
-                const retryRes = await fetch(url, { ...requestOptions, headers: retryHeaders });
+                const retryRes = await fetch(url, { ...requestOptions, headers: retryHeaders, dispatcher } as any);
                 res = retryRes;
                 statusCode = retryRes.status;
                 responseTime = Date.now() - retryStart;
