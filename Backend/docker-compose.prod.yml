@@ -29,7 +29,7 @@ services:
     depends_on:
       redis:
         condition: service_healthy
-    command: sh -c "npx prisma migrate deploy --schema=packages/db/prisma/schema.prisma && npm run start -w apps/scheduler"
+    command: sh -c "npx prisma migrate deploy --schema=packages/db/prisma/schema.prisma --config=packages/db/prisma.config.ts && npm run start -w apps/scheduler"
     restart: unless-stopped
 
   worker:
