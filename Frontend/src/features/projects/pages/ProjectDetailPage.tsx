@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { Plus, Terminal } from 'lucide-react';
+import { Plus, Terminal, FolderPlus } from 'lucide-react';
 import { useGetProjects, useGetProjectEndpoints, useGetLastOpenedEndpoint, useSetLastOpenedEndpoint } from '../hooks/useProjects';
 import { useGetProjectFolders } from '../hooks/useFolders';
 import { CreateEndpointModal } from '../components/CreateEndpointModal';
+import { CreateFolderModal } from '../components/CreateFolderModal';
 import { RequestPanel } from '../components/RequestPanel';
 import { SkeletonLoader } from '../../../shared/components/SkeletonLoader';
 import type { Endpoint } from '../types/project.types';
@@ -30,6 +31,7 @@ export const ProjectDetailPage: React.FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const selectedEndpointId = searchParams.get('endpointId');
     const [isEndpointModalOpen, setIsEndpointModalOpen] = useState(false);
+    const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
 
     // Fetch projects to find the metadata of the current active project
     const { data: projects, isLoading: projectsLoading } = useGetProjects();
@@ -110,19 +112,37 @@ export const ProjectDetailPage: React.FC = () => {
                 </p>
             </div>
 
-            <button
-                onClick={() => setIsEndpointModalOpen(true)}
-                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow-sm transition-all duration-150 flex items-center space-x-2 cursor-pointer"
-            >
-                <Plus size={16} />
-                <span>Create Request</span>
-            </button>
+            <div className="flex items-center space-x-3 mt-2">
+                <button
+                    onClick={() => setIsFolderModalOpen(true)}
+                    className="px-5 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl font-bold text-xs shadow-sm transition-all duration-150 flex items-center space-x-2 cursor-pointer"
+                >
+                    <FolderPlus size={16} />
+                    <span>Create Folder</span>
+                </button>
+
+                <button
+                    onClick={() => setIsEndpointModalOpen(true)}
+                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow-sm transition-all duration-150 flex items-center space-x-2 cursor-pointer"
+                >
+                    <Plus size={16} />
+                    <span>Create Request</span>
+                </button>
+            </div>
 
             {/* Create Endpoint Modal */}
             <CreateEndpointModal
                 isOpen={isEndpointModalOpen}
                 onClose={() => setIsEndpointModalOpen(false)}
                 projectId={id!}
+            />
+
+            {/* Create Folder Modal */}
+            <CreateFolderModal
+                isOpen={isFolderModalOpen}
+                onClose={() => setIsFolderModalOpen(false)}
+                projectId={id!}
+                parentId={null}
             />
         </div>
     );
