@@ -17,7 +17,7 @@ export const UptimeStats: React.FC<UptimeStatsProps> = ({ responses }) => {
         : 0;
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
                     UPTIME HEALTH

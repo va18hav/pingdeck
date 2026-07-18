@@ -126,7 +126,7 @@ export const CheckLogsTable: React.FC<CheckLogsTableProps> = ({ responses }) => 
                         </div>
 
                         {/* Metrics Bento Row */}
-                        <div className="grid grid-cols-3 gap-4 p-6 bg-slate-50/20 border-b border-slate-100 shrink-0">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 md:p-6 bg-slate-50/20 border-b border-slate-100 shrink-0">
                             <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-sm space-y-1">
                                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Response Status</span>
                                 <p className={`text-sm font-extrabold ${selectedLog.status === 'UP' ? 'text-emerald-600' : 'text-rose-600'}`}>

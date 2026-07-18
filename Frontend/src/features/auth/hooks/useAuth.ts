@@ -20,7 +20,7 @@ export const useLogin = () => {
             // Populate the React Query session cache with the authenticated user data
             queryClient.setQueryData(['session'], { success: true, data: data.data });
 
-            toast.success('Welcome to PingLoop!');
+            toast.success('Welcome to PingDeck!');
             navigate('/dashboard');
         },
         onError: (err: any) => {
@@ -45,7 +45,7 @@ export const useRegister = () => {
             // Populate the React Query session cache with the registered user data
             queryClient.setQueryData(['session'], { success: true, data: data.data });
 
-            toast.success('Registration successful! Welcome to PingLoop.');
+            toast.success('Registration successful! Welcome to PingDeck.');
             navigate('/dashboard');
         },
         onError: (err: any) => {
@@ -100,4 +100,117 @@ export const useVerifySession = () => {
     }, [query.isSuccess, query.isError, query.data, setUser, setLoading]);
 
     return query;
+};
+
+export const useSendOtp = () => {
+    return useMutation({
+        mutationFn: authService.sendOtp,
+        onSuccess: (data) => {
+            toast.success(data.message || 'Verification code sent to your email!');
+        },
+        onError: (err: any) => {
+            const message = err.response?.data?.message || 'Failed to send verification code';
+            toast.error(message);
+        }
+    });
+};
+
+export const useVerifyOtp = () => {
+    const { setUser } = useAuthStore();
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ code, purpose }: { code: string; purpose?: string }) => authService.verifyOtp(code, purpose),
+        onSuccess: (data, variables) => {
+            if (variables.purpose === 'update-password') {
+                toast.success('Identity verified. You can now update your password.');
+            } else {
+                setUser(data.data);
+                queryClient.setQueryData(['session'], { success: true, data: data.data });
+                toast.success('Email verified successfully! Welcome.');
+                navigate('/dashboard');
+            }
+        },
+        onError: (err: any) => {
+            const message = err.response?.data?.message || 'Verification failed';
+            toast.error(message);
+        }
+    });
+};
+
+export const useGoogleLogin = () => {
+    const { setUser, setLoading } = useAuthStore();
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: authService.googleLogin,
+        onSuccess: (data) => {
+            setUser(data.data);
+            setLoading(false);
+            queryClient.setQueryData(['session'], { success: true, data: data.data });
+            toast.success('Welcome to PingDeck!');
+            navigate('/dashboard');
+        },
+        onError: (err: any) => {
+            const message = err.response?.data?.message || 'Google login failed';
+            toast.error(message);
+        }
+    });
+};
+
+export const useForgotPassword = () => {
+    return useMutation({
+        mutationFn: authService.forgotPassword,
+        onSuccess: (data) => {
+            toast.success(data.message || 'Reset code sent to your email!');
+        },
+        onError: (err: any) => {
+            const message = err.response?.data?.message || 'Failed to send reset code';
+            toast.error(message);
+        }
+    });
+};
+
+export const useVerifyResetOtp = () => {
+    return useMutation({
+        mutationFn: ({ email, code }: { email: string; code: string }) => authService.verifyResetOtp(email, code),
+        onSuccess: (data) => {
+            toast.success(data.message || 'Verification successful! You can now reset your password.');
+        },
+        onError: (err: any) => {
+            const message = err.response?.data?.message || 'Code verification failed';
+            toast.error(message);
+        }
+    });
+};
+
+export const useResetPassword = () => {
+    const navigate = useNavigate();
+
+    return useMutation({
+        mutationFn: ({ email, newPassword }: { email: string; newPassword: string }) => authService.resetPassword(email, newPassword),
+        onSuccess: (data) => {
+            toast.success(data.message || 'Password reset successfully! Please log in.');
+            navigate('/login');
+        },
+        onError: (err: any) => {
+            const message = err.response?.data?.message || 'Failed to reset password';
+            toast.error(message);
+        }
+    });
+};
+
+export const useUpdatePassword = () => {
+    return useMutation({
+        mutationFn: authService.updatePassword,
+        onSuccess: (data) => {
+            toast.success(data.message || 'Password updated successfully!');
+        },
+        onError: (err: any) => {
+            const message = err.response?.data?.message || 'Failed to update password';
+            toast.error(message);
+        }
+    });
 };

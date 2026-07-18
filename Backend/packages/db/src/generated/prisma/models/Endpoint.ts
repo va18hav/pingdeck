@@ -538,10 +538,6 @@ export type EndpointUncheckedUpdateManyWithoutProjectNestedInput = {
   deleteMany?: Prisma.EndpointScalarWhereInput | Prisma.EndpointScalarWhereInput[]
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type EndpointCreateNestedOneWithoutMonitorsInput = {
   create?: Prisma.XOR<Prisma.EndpointCreateWithoutMonitorsInput, Prisma.EndpointUncheckedCreateWithoutMonitorsInput>
   connectOrCreate?: Prisma.EndpointCreateOrConnectWithoutMonitorsInput

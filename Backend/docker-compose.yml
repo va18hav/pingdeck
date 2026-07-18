@@ -37,6 +37,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
+    env_file:
+      - ./apps/scheduler/.env
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgres_db:5432/scheduler
       - REDIS_URL=redis://redis:6379

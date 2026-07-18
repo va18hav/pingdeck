@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
+import { useSearchParams } from 'react-router-dom';
 import { X } from 'lucide-react';
 import { useCreateFolder } from '../hooks/useFolders';
 
@@ -11,9 +13,11 @@ interface CreateFolderModalProps {
 
 export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({ isOpen, onClose, projectId, parentId }) => {
     const [name, setName] = useState('');
+    const [, setSearchParams] = useSearchParams();
 
-    const createFolderMutation = useCreateFolder(projectId, () => {
+    const createFolderMutation = useCreateFolder(projectId, (data) => {
         setName('');
+        setSearchParams({ folderId: data.id });
         onClose();
     });
 
@@ -25,7 +29,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({ isOpen, on
 
     if (!isOpen) return null;
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
             <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-md p-8 shadow-xl space-y-6 relative animate-scale-up">
                 <button
@@ -68,6 +72,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({ isOpen, on
                     </button>
                 </form>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };

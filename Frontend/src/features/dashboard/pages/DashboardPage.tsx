@@ -109,7 +109,7 @@ export const DashboardPage: React.FC = () => {
                         <ShieldCheck size={28} className="stroke-[2.5]" />
                     </div>
                     <div className="space-y-2 text-center md:text-left">
-                        <h3 className="text-lg font-bold text-slate-900">Welcome to PingLoop</h3>
+                        <h3 className="text-lg font-bold text-slate-900">Welcome to PingDeck</h3>
                         <p className="text-sm text-slate-500 max-w-2xl">
                             This dashboard provides a consolidated view of your active environments and monitored target systems. Use the Projects tab in the sidebar navigation to create project groups, register target endpoint checks, and adjust monitoring ping intervals.
                         </p>

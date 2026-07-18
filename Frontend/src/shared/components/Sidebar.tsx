@@ -9,7 +9,8 @@ import {
     ChevronDown, 
     Plus, 
     FolderPlus, 
-    Trash2
+    Trash2,
+    Settings
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useLogout } from '../../features/auth/hooks/useAuth';
@@ -21,13 +22,14 @@ import { CreateEndpointModal } from '../../features/projects/components/CreateEn
 import type { Folder } from '../../features/projects/types/folder.types';
 import type { Endpoint } from '../../features/projects/types/project.types';
 
-export const Sidebar: React.FC = () => {
+export const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void }> = ({ isOpen, onClose }) => {
     const { user } = useAuthStore();
     const logoutMutation = useLogout();
     const navigate = useNavigate();
     const { id: projectId } = useParams<{ id: string }>();
     const [searchParams, setSearchParams] = useSearchParams();
     const selectedEndpointId = searchParams.get('endpointId');
+    const selectedFolderId = searchParams.get('folderId');
 
     const isProjectView = !!projectId && window.location.pathname.startsWith('/projects/');
 
@@ -49,10 +51,17 @@ export const Sidebar: React.FC = () => {
 
     const handleLogout = () => {
         logoutMutation.mutate();
+        if (onClose) onClose();
     };
 
     const handleSelectEndpoint = (endpointId: string) => {
         setSearchParams({ endpointId });
+        if (onClose) onClose();
+    };
+
+    const handleSelectFolder = (folderId: string) => {
+        setSearchParams({ folderId });
+        if (onClose) onClose();
     };
 
     const openCreateFolder = (parentId: string | null = null) => {
@@ -91,28 +100,47 @@ export const Sidebar: React.FC = () => {
         }`;
 
     return (
-        <aside className="w-76 bg-white border-r border-slate-200/80 flex flex-col justify-between h-screen sticky top-0 shrink-0 select-none shadow-sm z-30">
-            {/* Header / Brand */}
-            <div className="p-5 border-b border-slate-100">
+        <>
+            {/* Mobile Sidebar overlay backdrop */}
+            {isOpen && (
                 <div 
-                    onClick={() => navigate('/dashboard')}
-                    className="flex items-center space-x-2.5 text-blue-600 font-extrabold text-xl font-mono cursor-pointer hover:opacity-85 transition-opacity"
-                >
-                    <Activity size={24} className="stroke-[2.5]" />
-                    <span>PingLoop</span>
+                    onClick={onClose}
+                    className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-30 lg:hidden animate-fade-in"
+                />
+            )}
+
+            <aside className={`w-76 bg-white border-r border-slate-200/80 flex flex-col justify-between h-screen select-none shadow-sm z-40 transition-transform duration-300
+                fixed inset-y-0 left-0 lg:sticky lg:top-0 shrink-0
+                ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+            `}>
+                {/* Header / Brand */}
+                <div className="p-5 border-b border-slate-100">
+                    <div 
+                        onClick={() => {
+                            navigate('/dashboard');
+                            if (onClose) onClose();
+                        }}
+                        className="flex items-center space-x-2.5 text-blue-600 font-extrabold text-xl font-mono cursor-pointer hover:opacity-85 transition-opacity"
+                    >
+                        <Activity size={24} className="stroke-[2.5]" />
+                        <span>PingDeck</span>
+                    </div>
                 </div>
-            </div>
 
             {/* Navigation links & Dynamic Tree */}
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
                 <div className="space-y-1.5">
-                    <NavLink to="/dashboard" className={linkClasses}>
+                    <NavLink to="/dashboard" onClick={onClose} className={linkClasses}>
                         <LayoutDashboard size={18} />
                         <span>Dashboard</span>
                     </NavLink>
-                    <NavLink to="/projects" className={linkClasses}>
+                    <NavLink to="/projects" onClick={onClose} className={linkClasses}>
                         <FolderIcon size={18} />
                         <span>Projects</span>
+                    </NavLink>
+                    <NavLink to="/settings" onClick={onClose} className={linkClasses}>
+                        <Settings size={18} />
+                        <span>Settings</span>
                     </NavLink>
                 </div>
 
@@ -148,7 +176,9 @@ export const Sidebar: React.FC = () => {
                                 parentId={null}
                                 depth={0}
                                 selectedEndpointId={selectedEndpointId}
+                                selectedFolderId={selectedFolderId}
                                 onSelectEndpoint={handleSelectEndpoint}
+                                onSelectFolder={handleSelectFolder}
                                 onAddSubfolder={openCreateFolder}
                                 onAddEndpoint={openCreateEndpoint}
                                 onDeleteFolder={handleDeleteFolder}
@@ -198,6 +228,7 @@ export const Sidebar: React.FC = () => {
                 />
             )}
         </aside>
+        </>
     );
 };
 
@@ -208,7 +239,9 @@ interface ExplorerTreeProps {
     parentId: string | null;
     depth: number;
     selectedEndpointId: string | null;
+    selectedFolderId: string | null;
     onSelectEndpoint: (id: string) => void;
+    onSelectFolder: (id: string) => void;
     onAddSubfolder: (id: string) => void;
     onAddEndpoint: (id: string) => void;
     onDeleteFolder: (id: string, e: React.MouseEvent) => void;
@@ -221,7 +254,9 @@ const ExplorerTree: React.FC<ExplorerTreeProps> = ({
     parentId,
     depth,
     selectedEndpointId,
+    selectedFolderId,
     onSelectEndpoint,
+    onSelectFolder,
     onAddSubfolder,
     onAddEndpoint,
     onDeleteFolder,
@@ -245,7 +280,9 @@ const ExplorerTree: React.FC<ExplorerTreeProps> = ({
                     endpoints={endpoints}
                     depth={depth}
                     selectedEndpointId={selectedEndpointId}
+                    selectedFolderId={selectedFolderId}
                     onSelectEndpoint={onSelectEndpoint}
+                    onSelectFolder={onSelectFolder}
                     onAddSubfolder={onAddSubfolder}
                     onAddEndpoint={onAddEndpoint}
                     onDeleteFolder={onDeleteFolder}
@@ -283,7 +320,7 @@ const ExplorerTree: React.FC<ExplorerTreeProps> = ({
                         </div>
                         <button 
                             onClick={(e) => onDeleteEndpoint(endpoint.id, e)}
-                            className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded transition-all cursor-pointer shrink-0"
+                            className="opacity-100 lg:opacity-0 lg:group-hover:opacity-100 p-0.5 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded transition-all cursor-pointer shrink-0"
                             title="Delete monitor"
                         >
                             <Trash2 size={12} />
@@ -321,7 +358,9 @@ interface FolderNodeProps {
     endpoints: Endpoint[];
     depth: number;
     selectedEndpointId: string | null;
+    selectedFolderId: string | null;
     onSelectEndpoint: (id: string) => void;
+    onSelectFolder: (id: string) => void;
     onAddSubfolder: (id: string) => void;
     onAddEndpoint: (id: string) => void;
     onDeleteFolder: (id: string, e: React.MouseEvent) => void;
@@ -334,7 +373,9 @@ const FolderNode: React.FC<FolderNodeProps> = ({
     endpoints,
     depth,
     selectedEndpointId,
+    selectedFolderId,
     onSelectEndpoint,
+    onSelectFolder,
     onAddSubfolder,
     onAddEndpoint,
     onDeleteFolder,
@@ -343,28 +384,40 @@ const FolderNode: React.FC<FolderNodeProps> = ({
     const [isOpen, setIsOpen] = useState(false);
     const containsSelected = folderContainsEndpoint(folder.id, endpoints, folders, selectedEndpointId);
 
-    // Expand folder automatically if it contains the selected endpoint
+    // Expand folder automatically if it contains the selected endpoint or is active
     useEffect(() => {
-        if (containsSelected) {
+        if (selectedFolderId === folder.id || containsSelected) {
             setIsOpen(true);
         }
-    }, [containsSelected]);
+    }, [selectedFolderId, folder.id, containsSelected]);
+
+    const isSelected = selectedFolderId === folder.id;
 
     return (
         <div className="space-y-0.5 animate-fade-in">
             <div
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={() => onSelectFolder(folder.id)}
                 style={{ paddingLeft: `${(depth * 12) + 4}px` }}
-                className="group flex items-center justify-between pr-2 py-1.5 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 cursor-pointer transition-all duration-150"
+                className={`group flex items-center justify-between pr-2 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all duration-150 ${
+                    isSelected
+                        ? 'bg-blue-50/50 text-blue-600 border-l-[3px] border-blue-600 rounded-l-none font-bold'
+                        : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
+                }`}
             >
                 <div className="flex items-center space-x-1.5 truncate">
-                    <span className="text-slate-400 shrink-0">
-                        {isOpen ? <ChevronDown size={14} className="animate-spin-once" /> : <ChevronRight size={14} />}
+                    <span 
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setIsOpen(!isOpen);
+                        }}
+                        className="text-slate-400 shrink-0 hover:text-slate-600 p-0.5"
+                    >
+                        {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                     </span>
-                    <FolderIcon size={14} className="text-blue-500/80 shrink-0 fill-blue-50" />
+                    <FolderIcon size={14} className={`shrink-0 ${isSelected ? 'text-blue-600 fill-blue-100' : 'text-blue-500/80 fill-blue-50'}`} />
                     <span className="truncate">{folder.name}</span>
                 </div>
-                <div className="flex items-center space-x-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center space-x-0.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                     <button 
                         onClick={(e) => { e.stopPropagation(); onAddSubfolder(folder.id); }}
                         className="p-0.5 hover:bg-slate-200 text-slate-500 hover:text-slate-800 rounded transition-colors cursor-pointer"
@@ -397,7 +450,9 @@ const FolderNode: React.FC<FolderNodeProps> = ({
                         parentId={folder.id}
                         depth={depth + 1}
                         selectedEndpointId={selectedEndpointId}
+                        selectedFolderId={selectedFolderId}
                         onSelectEndpoint={onSelectEndpoint}
+                        onSelectFolder={onSelectFolder}
                         onAddSubfolder={onAddSubfolder}
                         onAddEndpoint={onAddEndpoint}
                         onDeleteFolder={onDeleteFolder}

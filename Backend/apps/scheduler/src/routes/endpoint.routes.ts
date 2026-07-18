@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import * as endpointController from '../controllers/endpoint.controller.js';
-import { requireAuth } from '../middlewares/auth.middleware.js';
+import { requireAuth, requireVerified } from '../middlewares/auth.middleware.js';
 import { testPingLimiter } from '../middlewares/rateLimiter.js';
 
 const router = Router();
 
-router.use(requireAuth);
+router.use([requireAuth, requireVerified]);
 
 router.post('/', endpointController.createEndpoint);
 router.get('/project/:projectId', endpointController.getProjectEndpoints);

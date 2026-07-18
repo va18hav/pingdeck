@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import * as folderController from '../controllers/folder.controller.js';
-import { requireAuth } from '../middlewares/auth.middleware.js';
+import { requireAuth, requireVerified } from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
-router.use(requireAuth);
+router.use([requireAuth, requireVerified]);
 
 router.get('/project/:projectId', folderController.getProjectFolders);
 router.post('/', folderController.createFolder);

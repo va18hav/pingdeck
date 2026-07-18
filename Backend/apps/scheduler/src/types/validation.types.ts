@@ -113,3 +113,42 @@ export const createMonitorSchema = z.object({
 });
 
 export type CreateMonitorInput = z.infer<typeof createMonitorSchema>;
+
+export const verifyOtpSchema = z.object({
+  code: z.string().length(4, 'Verification code must be exactly 4 digits'),
+  purpose: z.string().optional(),
+});
+
+export type VerifyOtpInput = z.infer<typeof verifyOtpSchema>;
+
+export const googleLoginSchema = z.object({
+  credential: z.string().min(1, 'Credential token is required'),
+});
+
+export type GoogleLoginInput = z.infer<typeof googleLoginSchema>;
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email('Invalid email address'),
+});
+
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
+
+export const verifyResetOtpSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  code: z.string().length(4, 'Verification code must be exactly 4 digits'),
+});
+
+export type VerifyResetOtpInput = z.infer<typeof verifyResetOtpSchema>;
+
+export const resetPasswordSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  newPassword: z.string().min(6, 'Password must be at least 6 characters long'),
+});
+
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
+
+export const updatePasswordSchema = z.object({
+  newPassword: z.string().min(6, 'Password must be at least 6 characters long'),
+});
+
+export type UpdatePasswordInput = z.infer<typeof updatePasswordSchema>;

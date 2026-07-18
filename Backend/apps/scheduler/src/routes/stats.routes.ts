@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import * as statsController from '../controllers/stats.controller.js';
-import { requireAuth } from '../middlewares/auth.middleware.js';
+import { requireAuth, requireVerified } from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
-router.use(requireAuth);
+router.use([requireAuth, requireVerified]);
 
 router.get('/', statsController.getMonitorStats);
 

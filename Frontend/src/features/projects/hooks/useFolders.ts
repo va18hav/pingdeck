@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { folderService } from '../services/folderService';
 import { toast } from 'sonner';
+import type { Folder } from '../types/folder.types';
 
 export const useGetProjectFolders = (projectId: string) => {
     return useQuery({
@@ -10,14 +11,14 @@ export const useGetProjectFolders = (projectId: string) => {
     });
 };
 
-export const useCreateFolder = (projectId: string, onSuccessCb?: () => void) => {
+export const useCreateFolder = (projectId: string, onSuccessCb?: (data: Folder) => void) => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: folderService.createFolder,
-        onSuccess: () => {
+        onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: ['folders', projectId] });
             toast.success('Folder created successfully!');
-            if (onSuccessCb) onSuccessCb();
+            if (onSuccessCb) onSuccessCb(data);
         },
         onError: (err: any) => {
             const message = err.response?.data?.message || 'Failed to create folder';
