@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
+import { useSearchParams } from 'react-router-dom';
 import { X, Plus } from 'lucide-react';
 import { useCreateEndpoint } from '../hooks/useProjects';
 
@@ -13,11 +15,13 @@ export const CreateEndpointModal: React.FC<CreateEndpointModalProps> = ({ isOpen
     const [name, setName] = useState('');
     const [url, setUrl] = useState('https://api.example.com');
     const [method, setMethod] = useState('GET');
+    const [, setSearchParams] = useSearchParams();
 
-    const createEndpointMutation = useCreateEndpoint(projectId, () => {
+    const createEndpointMutation = useCreateEndpoint(projectId, (data) => {
         setName('');
         setUrl('https://api.example.com');
         setMethod('GET');
+        setSearchParams({ endpointId: data.id });
         onClose();
     });
 
@@ -35,7 +39,7 @@ export const CreateEndpointModal: React.FC<CreateEndpointModalProps> = ({ isOpen
 
     if (!isOpen) return null;
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
             <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg p-8 shadow-xl space-y-6 relative">
                 <button
@@ -112,6 +116,7 @@ export const CreateEndpointModal: React.FC<CreateEndpointModalProps> = ({ isOpen
                     </button>
                 </form>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };

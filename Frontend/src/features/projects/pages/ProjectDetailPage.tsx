@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { Plus, Terminal, FolderPlus } from 'lucide-react';
+import { Plus, Terminal, FolderPlus, Folder as FolderIcon } from 'lucide-react';
 import { useGetProjects, useGetProjectEndpoints, useGetLastOpenedEndpoint, useSetLastOpenedEndpoint } from '../hooks/useProjects';
 import { useGetProjectFolders } from '../hooks/useFolders';
 import { CreateEndpointModal } from '../components/CreateEndpointModal';
@@ -30,6 +30,7 @@ export const ProjectDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [searchParams, setSearchParams] = useSearchParams();
     const selectedEndpointId = searchParams.get('endpointId');
+    const selectedFolderId = searchParams.get('folderId');
     const [isEndpointModalOpen, setIsEndpointModalOpen] = useState(false);
     const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
 
@@ -56,6 +57,8 @@ export const ProjectDetailPage: React.FC = () => {
 
     // Perform redirect to last opened / first fallback request
     useEffect(() => {
+        if (selectedFolderId) return;
+
         if (!selectedEndpointId && endpoints && endpoints.length > 0 && !lastOpenedLoading) {
             const hasLastOpened = lastOpenedId && endpoints.some(e => e.id === lastOpenedId);
             if (hasLastOpened) {
@@ -67,10 +70,80 @@ export const ProjectDetailPage: React.FC = () => {
                 }
             }
         }
-    }, [selectedEndpointId, endpoints, lastOpenedId, lastOpenedLoading, folders, setSearchParams]);
+    }, [selectedEndpointId, selectedFolderId, endpoints, lastOpenedId, lastOpenedLoading, folders, setSearchParams]);
 
     if (projectsLoading || endpointsLoading || foldersLoading || lastOpenedLoading || !project) {
         return <SkeletonLoader />;
+    }
+
+    // If a folder is selected, show the folder dashboard workspace
+    if (selectedFolderId) {
+        const activeFolder = folders?.find(f => f.id === selectedFolderId);
+        
+        return (
+            <div className="mt-0 lg:-mt-6 h-auto lg:h-[calc(100vh-50px)] flex flex-col overflow-visible lg:overflow-hidden space-y-3 py-2 w-full animate-fade-in">
+                <div className="flex items-center space-x-3 text-slate-400 text-xs font-semibold shrink-0">
+                    <span>Projects</span>
+                    <span>/</span>
+                    <span className="text-slate-500 font-bold">{project.name}</span>
+                    <span>/</span>
+                    <span className="text-slate-850 font-extrabold">{activeFolder?.name || 'Folder'}</span>
+                </div>
+
+                {activeFolder ? (
+                    <div className="flex-1 flex flex-col items-center justify-center p-8 bg-slate-50/50 rounded-2xl border border-slate-200 border-dashed animate-fade-in max-w-4xl mx-auto my-12 text-center space-y-6">
+                        <div className="p-4 bg-white rounded-2xl shadow-sm border border-slate-100">
+                            <FolderIcon size={40} className="text-blue-600 stroke-[1.5] fill-blue-50" />
+                        </div>
+
+                        <div className="space-y-2 max-w-sm">
+                            <h3 className="text-lg font-bold text-slate-800">{activeFolder.name}</h3>
+                            <p className="text-slate-400 text-xs leading-relaxed">
+                                Workspace folder. Create requests inside this folder to monitor uptime endpoints or organize subfolders.
+                            </p>
+                        </div>
+
+                        <div className="flex items-center space-x-3 mt-2">
+                            <button
+                                onClick={() => setIsFolderModalOpen(true)}
+                                className="px-5 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl font-bold text-xs shadow-sm transition-all duration-150 flex items-center space-x-2 cursor-pointer"
+                            >
+                                <FolderPlus size={16} />
+                                <span>Create Subfolder</span>
+                            </button>
+
+                            <button
+                                onClick={() => setIsEndpointModalOpen(true)}
+                                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow-sm transition-all duration-150 flex items-center space-x-2 cursor-pointer"
+                            >
+                                <Plus size={16} />
+                                <span>Create Request</span>
+                            </button>
+                        </div>
+
+                        {/* Create Endpoint Modal scoped to this folder */}
+                        <CreateEndpointModal
+                            isOpen={isEndpointModalOpen}
+                            onClose={() => setIsEndpointModalOpen(false)}
+                            projectId={id!}
+                            folderId={activeFolder.id}
+                        />
+
+                        {/* Create Folder Modal nested under this folder */}
+                        <CreateFolderModal
+                            isOpen={isFolderModalOpen}
+                            onClose={() => setIsFolderModalOpen(false)}
+                            projectId={id!}
+                            parentId={activeFolder.id}
+                        />
+                    </div>
+                ) : (
+                    <div className="flex-1 bg-white border border-slate-200 rounded-2xl flex items-center justify-center">
+                        <SkeletonLoader />
+                    </div>
+                )}
+            </div>
+        );
     }
 
     // If an endpoint is selected, show the configuration workspace panel
@@ -78,7 +151,7 @@ export const ProjectDetailPage: React.FC = () => {
         const activeEndpoint = endpoints?.find(e => e.id === selectedEndpointId);
         
         return (
-            <div className="-mt-6 h-[calc(100vh-50px)] flex flex-col overflow-hidden space-y-3 py-2 w-full">
+            <div className="mt-0 lg:-mt-6 h-auto lg:h-[calc(100vh-50px)] flex flex-col overflow-visible lg:overflow-hidden space-y-3 py-2 w-full">
                 <div className="flex items-center space-x-3 text-slate-400 text-xs font-semibold shrink-0">
                     <span>Projects</span>
                     <span>/</span>

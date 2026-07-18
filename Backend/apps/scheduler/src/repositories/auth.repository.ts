@@ -38,3 +38,10 @@ export const verifyUser = async (id: string) => {
         }
     });
 };
+
+export const updatePassword = async (id: string, passwordHash: string) => {
+    return await prisma.user.update({
+        where: { id },
+        data: { password: passwordHash }
+    });
+};

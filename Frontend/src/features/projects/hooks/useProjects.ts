@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { projectService } from '../services/projectService';
 import { toast } from 'sonner';
+import type { Endpoint } from '../types/project.types';
 
 export const useGetProjects = () => {
     return useQuery({
@@ -54,16 +55,16 @@ export const useGetProjectEndpoints = (projectId: string) => {
     });
 };
 
-export const useCreateEndpoint = (projectId: string, onSuccessCb?: () => void) => {
+export const useCreateEndpoint = (projectId: string, onSuccessCb?: (data: Endpoint) => void) => {
     const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: projectService.createEndpoint,
-        onSuccess: () => {
+        onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: ['endpoints', projectId] });
             queryClient.invalidateQueries({ queryKey: ['stats'] });
             toast.success('Endpoint monitor registered successfully!');
-            if (onSuccessCb) onSuccessCb();
+            if (onSuccessCb) onSuccessCb(data);
         },
         onError: (err: any) => {
             const message = err.response?.data?.message || 'Failed to register endpoint';

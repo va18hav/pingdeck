@@ -10,5 +10,10 @@ router.post('/logout', authController.logout);
 router.get('/me', requireAuth, authController.getMe);
 router.post('/send-otp', requireAuth, authController.sendOtp);
 router.post('/verify-otp', requireAuth, authController.verifyOtp);
+router.post('/google', authController.googleLogin);
+router.post('/forgot-password', authController.forgotPassword);
+router.post('/verify-reset-otp', authController.verifyResetOtp);
+router.post('/reset-password', authController.resetPassword);
+router.post('/update-password', requireAuth, authController.updatePassword);
 
 export default router;

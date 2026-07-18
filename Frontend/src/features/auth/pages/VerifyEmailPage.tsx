@@ -44,7 +44,7 @@ export const VerifyEmailPage: React.FC = () => {
             toast.error('Please enter a valid 4-digit verification code');
             return;
         }
-        verifyOtpMutation.mutate(trimmedCode);
+        verifyOtpMutation.mutate({ code: trimmedCode });
     };
 
     const handleLogout = () => {

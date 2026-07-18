@@ -348,7 +348,7 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({ endpoint, projectId 
     };
 
     return (
-        <div className="flex-1 min-h-0 flex flex-col space-y-3 overflow-hidden w-full animate-fade-in pb-2">
+        <div className="flex-1 lg:min-h-0 flex flex-col space-y-3 lg:overflow-hidden w-full animate-fade-in pb-2">
             {/* Top Method / URL Bar */}
             <div className="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-3 items-stretch">
                 <div className="flex flex-1 border border-slate-200 rounded-xl overflow-hidden shadow-sm bg-white focus-within:ring-4 focus-within:ring-blue-50 focus-within:border-blue-500 transition-all duration-200">
@@ -370,11 +370,11 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({ endpoint, projectId 
                     />
                 </div>
 
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center gap-2 w-full md:w-auto">
                     <button
                         onClick={handleSend}
                         disabled={testEndpointMutation.isPending || updateEndpointMutation.isPending}
-                        className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold flex items-center space-x-2 shadow-md shadow-blue-100 transition-all cursor-pointer disabled:opacity-50"
+                        className="flex-1 md:flex-none justify-center px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold flex items-center space-x-2 shadow-md shadow-blue-100 transition-all cursor-pointer disabled:opacity-50"
                     >
                         {testEndpointMutation.isPending ? (
                             <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -388,7 +388,7 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({ endpoint, projectId 
                     <button
                         onClick={handleSave}
                         disabled={updateEndpointMutation.isPending}
-                        className="px-5 py-3 border border-slate-200 hover:border-slate-300 bg-white text-slate-700 rounded-xl text-sm font-semibold flex items-center space-x-2 shadow-sm transition-all cursor-pointer disabled:opacity-50"
+                        className="flex-1 md:flex-none justify-center px-5 py-3 border border-slate-200 hover:border-slate-300 bg-white text-slate-700 rounded-xl text-sm font-semibold flex items-center space-x-2 shadow-sm transition-all cursor-pointer disabled:opacity-50"
                     >
                         <Save size={14} />
                         <span>Save</span>
@@ -396,7 +396,7 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({ endpoint, projectId 
 
                     <button
                         onClick={() => setIsCookieModalOpen(true)}
-                        className="px-4 py-3 border border-slate-200 hover:border-slate-300 bg-white text-slate-600 rounded-xl text-sm font-semibold flex items-center space-x-1.5 shadow-sm transition-all cursor-pointer"
+                        className="px-3 md:px-4 py-3 border border-slate-200 hover:border-slate-300 bg-white text-slate-600 rounded-xl text-sm font-semibold flex items-center space-x-1.5 shadow-sm transition-all cursor-pointer"
                         title="Manage stored cookies"
                     >
                         <Cookie size={14} />
@@ -406,8 +406,8 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({ endpoint, projectId 
             </div>
 
             {/* Config Panel Tabs */}
-            <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden flex flex-col h-[280px] shrink-0">
-                <div className="flex border-b border-slate-100 bg-slate-50/50 px-4 shrink-0">
+            <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden flex flex-col h-auto lg:h-[280px] shrink-0">
+                <div className="flex border-b border-slate-100 bg-slate-50/50 px-4 shrink-0 overflow-x-auto scrollbar-thin">
                     {(['params', 'headers', 'auth', 'body', 'settings'] as const).map(tab => (
                         <button
                             key={tab}
@@ -661,8 +661,8 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({ endpoint, projectId 
             </div>
 
             {/* Test Execution Output Panel (Postman Response Viewer) */}
-            <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden flex-1 min-h-0 flex flex-col">
-                <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/50 px-6 py-2.5 shrink-0">
+            <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden flex-1 lg:min-h-0 flex flex-col min-h-[300px]">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center justify-between border-b border-slate-100 bg-slate-50/50 px-6 py-2.5 shrink-0">
                     <div className="flex items-center space-x-6">
                         <span className="text-sm font-extrabold text-slate-800 tracking-tight">Response</span>
                         {activeResponse && !isExecuting && (
@@ -683,7 +683,7 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({ endpoint, projectId 
                             </div>
                         )}
                     </div>
-                    <div className="flex items-center space-x-4">
+                    <div className="flex flex-wrap items-center gap-3">
                         {activeResponse && !isExecuting && (
                             <div className="flex items-center space-x-4 text-xs font-bold shrink-0">
                                 <div className="flex items-center space-x-1.5">

@@ -27,8 +27,33 @@ export const authService = {
         return res.data;
     },
 
-    verifyOtp: async (code: string): Promise<AuthResponse> => {
-        const res = await api.post<AuthResponse>('/auth/verify-otp', { code });
+    verifyOtp: async (code: string, purpose?: string): Promise<AuthResponse> => {
+        const res = await api.post<AuthResponse>('/auth/verify-otp', { code, purpose });
+        return res.data;
+    },
+
+    googleLogin: async (credential: string): Promise<AuthResponse> => {
+        const res = await api.post<AuthResponse>('/auth/google', { credential });
+        return res.data;
+    },
+
+    forgotPassword: async (email: string): Promise<{ success: boolean; message: string }> => {
+        const res = await api.post<{ success: boolean; message: string }>('/auth/forgot-password', { email });
+        return res.data;
+    },
+
+    verifyResetOtp: async (email: string, code: string): Promise<{ success: boolean; message: string }> => {
+        const res = await api.post<{ success: boolean; message: string }>('/auth/verify-reset-otp', { email, code });
+        return res.data;
+    },
+
+    resetPassword: async (email: string, newPassword: string): Promise<{ success: boolean; message: string }> => {
+        const res = await api.post<{ success: boolean; message: string }>('/auth/reset-password', { email, newPassword });
+        return res.data;
+    },
+
+    updatePassword: async (newPassword: string): Promise<{ success: boolean; message: string }> => {
+        const res = await api.post<{ success: boolean; message: string }>('/auth/update-password', { newPassword });
         return res.data;
     }
 };
