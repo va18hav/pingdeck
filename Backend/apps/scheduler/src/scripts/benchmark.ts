@@ -1,8 +1,5 @@
 import { Queue, QueueEvents } from 'bullmq';
 import { PrismaClient } from 'db';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 // Match connection configuration pattern used in queue.ts
 const getRedisConnection = () => {
