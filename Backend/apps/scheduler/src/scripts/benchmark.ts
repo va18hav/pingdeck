@@ -1,5 +1,5 @@
 import { Queue, QueueEvents } from 'bullmq';
-import { PrismaClient } from 'db';
+import { prisma } from 'db';
 
 // Match connection configuration pattern used in queue.ts
 const getRedisConnection = () => {
@@ -30,7 +30,6 @@ const connection = getRedisConnection();
 const jobQueue = new Queue('jobs-queue', { connection });
 const queueEvents = new QueueEvents('jobs-queue', { connection });
 
-const prisma = new PrismaClient();
 
 async function runBenchmark() {
     const NUM_JOBS = 1000; // Batch size to enqueue
