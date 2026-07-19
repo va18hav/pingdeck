@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
-import { LandingPage } from './features/landing/pages/LandingPage';
+// import { LandingPage } from './features/landing/pages/LandingPage';
 import { LoginPage } from './features/auth/pages/LoginPage';
 import { RegisterPage } from './features/auth/pages/RegisterPage';
 import { ForgotPasswordPage } from './features/auth/pages/ForgotPasswordPage';
@@ -21,11 +21,9 @@ export default function App() {
             <Toaster position="top-right" richColors />
 
             <Routes>
-                {/* Public Landing Page */}
-                <Route path="/" element={<LandingPage />} />
-
                 {/* Public Auth Routes */}
-                <Route path="/login" element={<LoginPage />} />
+                <Route path="/" element={<LoginPage />} />
+                {/* <Route path="/login" element={<LoginPage />} /> */}
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/reset-password" element={<ResetPasswordPage />} />

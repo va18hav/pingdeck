@@ -35,3 +35,5 @@ See [`Backend/ARCHITECTURE.md`](./Backend/ARCHITECTURE.md) for how these fit tog
 ## Getting started
 
 See [`Backend/README.md`](./Backend/README.md) for backend setup and [`Frontend/README.md`](./Frontend/README.md) for the frontend.
+
+git remote set-url origin https://github.com/va18hav/pingdeck.git
