@@ -5,6 +5,7 @@ import {
     loginSchema, 
     verifyOtpSchema,
     googleLoginSchema,
+    githubLoginSchema,
     forgotPasswordSchema,
     verifyResetOtpSchema,
     resetPasswordSchema,
@@ -113,9 +114,9 @@ export const verifyOtp = async (req: Request, res: Response) => {
 };
 
 export const googleLogin = async (req: Request, res: Response) => {
-    const { credential } = googleLoginSchema.parse(req.body);
+    const { credential, code, redirectUri } = googleLoginSchema.parse(req.body);
 
-    const { user, token } = await authService.loginOrRegisterGoogle(credential);
+    const { user, token } = await authService.loginOrRegisterGoogle(credential, code, redirectUri);
 
     const isProduction = process.env.NODE_ENV === 'production';
     res.cookie('token', token, {
@@ -128,6 +129,26 @@ export const googleLogin = async (req: Request, res: Response) => {
     res.status(200).json({
         success: true,
         message: 'Google login successful',
+        data: user
+    });
+};
+
+export const githubLogin = async (req: Request, res: Response) => {
+    const { code } = githubLoginSchema.parse(req.body);
+
+    const { user, token } = await authService.loginOrRegisterGithub(code);
+
+    const isProduction = process.env.NODE_ENV === 'production';
+    res.cookie('token', token, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
+        maxAge: 24 * 60 * 60 * 1000 // 1 day
+    });
+
+    res.status(200).json({
+        success: true,
+        message: 'GitHub login successful',
         data: user
     });
 };

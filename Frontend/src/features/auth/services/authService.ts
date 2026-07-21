@@ -32,8 +32,13 @@ export const authService = {
         return res.data;
     },
 
-    googleLogin: async (credential: string): Promise<AuthResponse> => {
-        const res = await api.post<AuthResponse>('/auth/google', { credential });
+    googleLogin: async (payload: { credential?: string; code?: string; redirectUri?: string }): Promise<AuthResponse> => {
+        const res = await api.post<AuthResponse>('/auth/google', payload);
+        return res.data;
+    },
+
+    githubLogin: async (code: string): Promise<AuthResponse> => {
+        const res = await api.post<AuthResponse>('/auth/github', { code });
         return res.data;
     },
 

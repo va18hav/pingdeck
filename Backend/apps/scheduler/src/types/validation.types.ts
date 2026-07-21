@@ -122,10 +122,21 @@ export const verifyOtpSchema = z.object({
 export type VerifyOtpInput = z.infer<typeof verifyOtpSchema>;
 
 export const googleLoginSchema = z.object({
-  credential: z.string().min(1, 'Credential token is required'),
+  credential: z.string().optional(),
+  code: z.string().optional(),
+  redirectUri: z.string().optional(),
+}).refine((data) => data.credential || data.code, {
+  message: "Either credential token or authorization code is required",
+  path: ["credential", "code"]
 });
 
 export type GoogleLoginInput = z.infer<typeof googleLoginSchema>;
+
+export const githubLoginSchema = z.object({
+  code: z.string().min(1, 'Authorization code is required'),
+});
+
+export type GithubLoginInput = z.infer<typeof githubLoginSchema>;
 
 export const forgotPasswordSchema = z.object({
   email: z.string().email('Invalid email address'),

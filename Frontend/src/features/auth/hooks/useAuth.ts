@@ -160,6 +160,27 @@ export const useGoogleLogin = () => {
     });
 };
 
+export const useGithubLogin = () => {
+    const { setUser, setLoading } = useAuthStore();
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: authService.githubLogin,
+        onSuccess: (data) => {
+            setUser(data.data);
+            setLoading(false);
+            queryClient.setQueryData(['session'], { success: true, data: data.data });
+            toast.success('Welcome to PingDeck!');
+            navigate('/dashboard');
+        },
+        onError: (err: any) => {
+            const message = err.response?.data?.message || 'GitHub login failed';
+            toast.error(message);
+        }
+    });
+};
+
 export const useForgotPassword = () => {
     return useMutation({
         mutationFn: authService.forgotPassword,

@@ -127,19 +127,42 @@ export const verifyOtp = async (userId: string, code: string, purpose?: string) 
     }
 };
 
-export const loginOrRegisterGoogle = async (credential: string) => {
-    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+export const loginOrRegisterGoogle = async (credential?: string, code?: string, redirectUri?: string) => {
     let payload;
 
-    try {
-        const ticket = await client.verifyIdToken({
-            idToken: credential,
-            audience: process.env.GOOGLE_CLIENT_ID,
-        });
-        payload = ticket.getPayload();
-    } catch (err: any) {
-        logger.error({ err }, 'Google ID token verification failed');
-        throw new AppError(400, 'Invalid Google authentication token');
+    if (code) {
+        const client = new OAuth2Client(
+            process.env.GOOGLE_CLIENT_ID,
+            process.env.GOOGLE_CLIENT_SECRET
+        );
+        try {
+            const { tokens } = await client.getToken({
+                code,
+                redirect_uri: redirectUri
+            });
+            const ticket = await client.verifyIdToken({
+                idToken: tokens.id_token!,
+                audience: process.env.GOOGLE_CLIENT_ID,
+            });
+            payload = ticket.getPayload();
+        } catch (err: any) {
+            logger.error({ err }, 'Google Auth Code exchange failed');
+            throw new AppError(400, 'Invalid Google authentication code');
+        }
+    } else if (credential) {
+        const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+        try {
+            const ticket = await client.verifyIdToken({
+                idToken: credential,
+                audience: process.env.GOOGLE_CLIENT_ID,
+            });
+            payload = ticket.getPayload();
+        } catch (err: any) {
+            logger.error({ err }, 'Google ID token verification failed');
+            throw new AppError(400, 'Invalid Google authentication token');
+        }
+    } else {
+        throw new AppError(400, 'Missing Google credential or code');
     }
 
     if (!payload || !payload.email) {
@@ -147,6 +170,127 @@ export const loginOrRegisterGoogle = async (credential: string) => {
     }
 
     const email = payload.email.toLowerCase();
+
+    // Check if user already exists
+    const existingUser = await authRepo.findUserByEmail(email);
+    let userResult;
+
+    if (existingUser) {
+        if (!existingUser.isVerified) {
+            userResult = await authRepo.verifyUser(existingUser.id);
+        } else {
+            userResult = {
+                id: existingUser.id,
+                email: existingUser.email,
+                isVerified: existingUser.isVerified,
+                createdAt: existingUser.createdAt
+            };
+        }
+    } else {
+        // Create new user with a secure random password
+        const secureRandomPassword = crypto.randomBytes(32).toString('hex');
+        const passwordHash = await bcrypt.hash(secureRandomPassword, 10);
+        const newUser = await authRepo.createUser(email, passwordHash);
+
+        // Mark as verified immediately
+        userResult = await authRepo.verifyUser(newUser.id);
+    }
+
+    const token = jwt.sign({ userId: userResult.id, isVerified: userResult.isVerified }, JWT_SECRET, { expiresIn: '1d' });
+
+    return { user: userResult, token };
+};
+
+export const loginOrRegisterGithub = async (code: string) => {
+    const clientId = process.env.GITHUB_CLIENT_ID;
+    const clientSecret = process.env.GITHUB_CLIENT_SECRET;
+
+    if (!clientId || !clientSecret) {
+        throw new AppError(500, 'GitHub OAuth application is not configured on the server');
+    }
+
+    // 1. Exchange authorization code for GitHub access token
+    let accessToken: string;
+    try {
+        const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+                client_id: clientId,
+                client_secret: clientSecret,
+                code,
+            }),
+        });
+
+        if (!tokenResponse.ok) {
+            throw new Error(`Token exchange failed with status ${tokenResponse.status}`);
+        }
+
+        const tokenData = await tokenResponse.json() as any;
+        if (tokenData.error) {
+            throw new Error(`GitHub token error: ${tokenData.error_description || tokenData.error}`);
+        }
+
+        accessToken = tokenData.access_token;
+    } catch (err: any) {
+        logger.error({ err }, 'GitHub OAuth access token exchange failed');
+        throw new AppError(400, `GitHub token exchange failed: ${err.message}`);
+    }
+
+    // 2. Fetch user profile from GitHub
+    let githubUser: any;
+    try {
+        const userResponse = await fetch('https://api.github.com/user', {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'User-Agent': 'PingDeck-App',
+            },
+        });
+
+        if (!userResponse.ok) {
+            throw new Error(`Failed to fetch user profile: status ${userResponse.status}`);
+        }
+
+        githubUser = await userResponse.json();
+    } catch (err: any) {
+        logger.error({ err }, 'Failed to fetch user details from GitHub');
+        throw new AppError(400, 'Failed to retrieve GitHub user details');
+    }
+
+    // 3. Fetch user emails to get the primary/verified email
+    let email: string | null = null;
+    try {
+        const emailsResponse = await fetch('https://api.github.com/user/emails', {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'User-Agent': 'PingDeck-App',
+            },
+        });
+
+        if (emailsResponse.ok) {
+            const emails = await emailsResponse.json() as any[];
+            const primaryEmailObj = emails.find(e => e.primary && e.verified) || emails.find(e => e.verified) || emails[0];
+            if (primaryEmailObj) {
+                email = primaryEmailObj.email;
+            }
+        }
+    } catch (err) {
+        logger.warn({ err }, 'Failed to fetch user emails from GitHub, falling back to profile email');
+    }
+
+    // Fallback to profile email
+    if (!email && githubUser.email) {
+        email = githubUser.email;
+    }
+
+    if (!email) {
+        throw new AppError(400, 'Could not retrieve a valid email address from your GitHub account.');
+    }
+
+    email = email.toLowerCase();
 
     // Check if user already exists
     const existingUser = await authRepo.findUserByEmail(email);

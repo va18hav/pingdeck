@@ -19,15 +19,15 @@ const PINGDECK_TOP = { x: 270, y: 35 };
 // Spacious 2x2 layout for 4 API Endpoints
 const ENDPOINTS: EndpointNode[] = [
     // Level 1 (Y = 145)
-    { id: 'db', name: 'db.internal.io', x: 110, y: 145, branchY: 95, latencyMs: 28, code: '200 OK', latency: '28ms', status: 'healthy' },
-    { id: 'auth', name: 'auth.service.com', x: 430, y: 145, branchY: 95, latencyMs: 42, code: '200 OK', latency: '42ms', status: 'healthy' },
+    { id: 'db', name: 'users.acme.com', x: 110, y: 145, branchY: 95, latencyMs: 28, code: '200 OK', latency: '28ms', status: 'healthy' },
+    { id: 'auth', name: 'auth.acme.com', x: 430, y: 145, branchY: 95, latencyMs: 42, code: '200 OK', latency: '42ms', status: 'healthy' },
     // Level 2 (Y = 245)
-    { id: 'billing', name: 'billing.v1.net', x: 110, y: 245, branchY: 195, latencyMs: 35, code: '200 OK', latency: '35ms', status: 'healthy' },
-    { id: 'gateway', name: 'gateway.acme.org', x: 430, y: 245, branchY: 195, latencyMs: 10023, code: '504 DOWN', latency: '10,023ms', status: 'down' },
+    { id: 'billing', name: 'billing.acme.com', x: 110, y: 245, branchY: 195, latencyMs: 35, code: '200 OK', latency: '35ms', status: 'healthy' },
+    { id: 'gateway', name: 'gateway.acme.com', x: 430, y: 245, branchY: 195, latencyMs: 10023, code: '504 DOWN', latency: '10,023ms', status: 'down' },
 ];
 
 // Alert Box Node directly below DOWN Endpoint (gateway at X=430, Y=245)
-const ALERT_NODE = { id: 'alert', name: 'Alert Dispatch', x: 430, y: 340, code: 'Email Sent' };
+const ALERT_NODE = { id: 'alert', name: 'Alert', x: 430, y: 340, code: 'Email Sent' };
 
 // Helper to calculate dot position along 90-degree path: (270,35) -> (270,branchY) -> (targetX,branchY) -> (targetX,targetY)
 function getOrthogonalPos(targetX: number, targetY: number, branchY: number, progress: number) {
@@ -256,9 +256,9 @@ export const ApiNetworkCluster: React.FC = () => {
                     </div>
                     <span>{ALERT_NODE.name}</span>
                 </div>
-                <div className="flex items-center justify-between gap-2 mt-1 text-[10px]">
-                    <span className="text-rose-400 font-semibold">Outage Alert</span>
-                    <span className="text-slate-300 font-semibold">{ALERT_NODE.code}</span>
+                <div className="mt-1.5 space-y-0.5 text-[10px]">
+                    <div className="text-rose-400 font-semibold">Outage Alert</div>
+                    <div className="text-slate-300 font-medium">{ALERT_NODE.code}</div>
                 </div>
             </div>
         </div>
