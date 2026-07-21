@@ -121,7 +121,7 @@ export const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void }> = ({ 
                         }}
                         className="flex items-center space-x-2.5 text-blue-600 font-extrabold text-xl font-mono cursor-pointer hover:opacity-85 transition-opacity"
                     >
-                        <img src="/logo.png" alt="PingDeck" className="w-6 h-6 object-contain" />
+                        <img src="/logo.png" alt="PingDeck" className="w-8 h-8 object-contain select-none" />
                         <span>PingDeck</span>
                     </div>
                 </div>

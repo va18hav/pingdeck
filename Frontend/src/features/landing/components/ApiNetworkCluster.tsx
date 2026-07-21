@@ -187,9 +187,10 @@ export const ApiNetworkCluster: React.FC = () => {
 
                 {/* Top Node: PingDeck Logo */}
                 <g transform={`translate(${PINGDECK_TOP.x}, ${PINGDECK_TOP.y})`}>
-                    <foreignObject x="-16" y="-16" width="32" height="32">
+                    <circle r="22" fill="white" stroke="#e2e8f0" strokeWidth="1.5" className="shadow-xs" />
+                    <foreignObject x="-20" y="-20" width="40" height="40">
                         <div className="flex items-center justify-center w-full h-full">
-                            <img src="/logo.png" alt="PingDeck" className="w-8 h-8 object-contain" />
+                            <img src="/logo.png" alt="PingDeck" className="w-10 h-10 object-contain select-none" />
                         </div>
                     </foreignObject>
                 </g>

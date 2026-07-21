@@ -15,7 +15,7 @@ export const AppLayout: React.FC = () => {
                     onClick={() => navigate('/dashboard')}
                     className="flex items-center space-x-2.5 text-blue-600 font-extrabold text-lg font-mono cursor-pointer"
                 >
-                    <img src="/logo.png" alt="PingDeck" className="w-5 h-5 object-contain" />
+                    <img src="/logo.png" alt="PingDeck" className="w-7 h-7 object-contain select-none" />
                     <span>PingDeck</span>
                 </div>
                 <button 

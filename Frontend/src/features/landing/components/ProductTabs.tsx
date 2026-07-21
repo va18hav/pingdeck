@@ -74,7 +74,7 @@ export const ProductTabs: React.FC = () => {
                         <img
                             src={current.image}
                             alt={current.alt}
-                            className="w-full h-full object-cover select-none pointer-events-none"
+                            className="w-full h-full object-fill select-none pointer-events-none"
                         />
                     </div>
                 </div>

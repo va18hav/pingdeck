@@ -14,7 +14,7 @@ export const ProtectedRoute: React.FC = () => {
     if (isLoading) {
         return (
             <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center space-y-4">
-                <img src="/logo.png" alt="PingDeck" className="w-12 h-12 object-contain animate-pulse" />
+                <img src="/logo.png" alt="PingDeck" className="w-16 h-16 object-contain animate-pulse select-none" />
                 <div className="text-slate-500 font-mono text-sm font-semibold tracking-widest animate-pulse">
                     VERIFYING PINGDECK SECURE ROUTE...
                 </div>

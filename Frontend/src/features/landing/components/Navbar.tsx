@@ -16,7 +16,7 @@ export const Navbar: React.FC = () => {
                     onClick={() => navigate('/')}
                     className="flex items-center space-x-2 font-bold font-mono text-slate-900 hover:text-blue-600 transition-colors duration-150 cursor-pointer"
                 >
-                    <img src="/logo.png" alt="PingDeck" className="w-5 h-5 object-contain" />
+                    <img src="/logo.png" alt="PingDeck" className="w-7 h-7 object-contain select-none" />
                     <span>PingDeck</span>
                 </button>
 

@@ -194,11 +194,15 @@ export const MonitorDetailPage: React.FC = () => {
             {/* Quick Metrics Bento Card Grid */}
             <UptimeStats responses={responses} />
 
-            {/* SVG Latency Line Chart */}
-            <LatencyChart responses={responses} />
+            {/* Sticky SVG Latency Line Chart */}
+            <div className="sticky top-[-16px] sm:top-[-24px] md:top-[-32px] lg:top-[-40px] z-10 bg-slate-50/95 backdrop-blur-md pt-3 pb-4 border-b border-slate-200/40">
+                <LatencyChart responses={responses} />
+            </div>
 
             {/* Historical Check Logs Table */}
-            <CheckLogsTable responses={responses} />
+            <div className="mt-6">
+                <CheckLogsTable responses={responses} />
+            </div>
 
             {/* Update Interval Modal */}
             {isUpdateModalOpen && activeMonitor && (

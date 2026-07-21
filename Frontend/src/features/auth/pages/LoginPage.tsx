@@ -43,8 +43,8 @@ export const LoginPage: React.FC = () => {
             <div className="w-full max-w-md bg-white border border-slate-200 rounded-2xl p-8 shadow-sm space-y-6">
                 {/* Logo and title */}
                 <div className="text-center space-y-2">
-                    <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-50 text-blue-600 rounded-xl mb-2">
-                        <img src="/logo.png" alt="PingDeck" className="w-7 h-7 object-contain" />
+                    <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-50/50 rounded-xl mb-2">
+                        <img src="/logo.png" alt="PingDeck" className="w-9 h-9 object-contain select-none" />
                     </div>
                     <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">PingDeck</h2>
                     <p className="text-sm text-slate-500">
