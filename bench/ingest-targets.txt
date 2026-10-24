@@ -1,0 +1,3 @@
+POST http://localhost:8080/api/v1/events/1d303762-71c5-43f1-9f2b-c542ac6ecb49
+Content-Type: application/json
+@bench/body.json

@@ -13,3 +13,6 @@ web/dist/
 # OS
 .DS_Store
 *.log
+
+# Benchmark artifacts
+bench/reports/
