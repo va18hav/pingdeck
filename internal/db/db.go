@@ -3,10 +3,17 @@ package db
 
 import (
 	"context"
-	"os"
+
+	_ "embed"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
+
+// initSQL is embedded at build time so the binary is self-contained
+// (no migration files needed at runtime — required for the scratch Docker image).
+//
+//go:embed migrations/001_init.sql
+var initSQL string
 
 // Store wraps the pgxpool; all queries go through it.
 type Store struct {
@@ -25,12 +32,7 @@ func New(ctx context.Context, dbURL string) (*Store, error) {
 		return nil, err
 	}
 
-	sql, err := fetchSQL()
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = pool.Exec(ctx, sql)
+	_, err = pool.Exec(ctx, initSQL)
 	if err != nil {
 		return nil, err
 	}
@@ -40,13 +42,4 @@ func New(ctx context.Context, dbURL string) (*Store, error) {
 
 func (s *Store) Close() {
 	s.pool.Close()
-}
-
-// fetchSQL reads the migration file at runtime (path relative to the repo root).
-func fetchSQL() (string, error) {
-	sql, err := os.ReadFile("internal/db/migrations/001_init.sql")
-	if err != nil {
-		return "", err
-	}
-	return string(sql), nil
 }

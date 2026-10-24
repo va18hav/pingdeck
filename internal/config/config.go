@@ -2,10 +2,18 @@
 // dev database URL.
 package config
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
-// DBURL builds the dev DSN; settings are hardcoded to match docker-compose.yml.
+// DBURL returns DATABASE_URL from the environment (used by the Docker
+// compose deployment), falling back to the hardcoded dev default that
+// matches docker-compose.yml.
 func DBURL() string {
+	if v := os.Getenv("DATABASE_URL"); v != "" {
+		return v
+	}
 	user := "pingdeck"
 	password := "pingdeck_password"
 	host := "localhost"
