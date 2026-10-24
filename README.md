@@ -49,25 +49,35 @@ PingDeck sits between external webhook providers (Stripe, GitHub, Slack, Shopify
 
 ## Quickstart
 
+Run the entire stack (PostgreSQL + Go binary + dashboard) with one command:
+
 ```bash
 # 1. Clone the repository
 git clone https://github.com/va18hav/pingdeck.git
 cd pingdeck
 
-# 2. Start PostgreSQL 17 (the only container)
-docker compose up -d
-
-# 3. Run the Go backend — migrations apply automatically on startup
-go run ./cmd/pingdeck
-
-# 4. Run the React dashboard (separate terminal)
-cd web && pnpm install && pnpm dev
+# 2. Build and start everything — migrations apply automatically on startup
+docker compose up --build
 ```
 
 Once running:
-* **Replay Deck UI:** `http://localhost:5173`
-* **Control API:** `http://localhost:8080`
+* **Replay Deck UI & Control API:** `http://localhost:8080`
 * **Webhook ingestion URL:** `http://localhost:8080/api/v1/events/:endpoint_id`
+
+## Development Mode
+
+To work on the Go backend or React frontend with hot-reloading:
+
+```bash
+# 1. Start PostgreSQL (the only container needed in dev)
+docker compose up -d db
+
+# 2. Run the Go backend (API + worker on :8080)
+go run ./cmd/pingdeck
+
+# 3. Run the Vite dev server (on :5173, proxying API calls to :8080)
+cd web && pnpm install && pnpm dev
+```
 
 ## Try It
 
@@ -81,7 +91,9 @@ curl -X POST localhost:8080/api/v1/events/<endpoint_id> \
 
 ## Configuration
 
-Dev database settings are hardcoded in `internal/config/config.go` (user `pingdeck`, password `pingdeck_password`, `localhost:5432/pingdeck`) and match `docker-compose.yml` — edit there if your Postgres differs. Env-driven configuration is a planned polish item.
+Set `DATABASE_URL` in the environment when running outside compose; the default
+falls back to the local dev Postgres (`pingdeck` / `pingdeck_password` on
+`localhost:5432/pingdeck`) matching `docker-compose.yml`.
 
 ---
 
