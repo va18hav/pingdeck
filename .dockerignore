@@ -1,0 +1,9 @@
+# Keep the build context lean and secrets out of the image
+web/node_modules
+web/dist
+web/.env
+.env
+.git
+.DS_Store
+*.log
+pingdeck
