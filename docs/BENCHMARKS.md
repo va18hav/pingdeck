@@ -26,6 +26,25 @@ webhook disablement.
 Rate-paced attacks (open-loop) at 100/250/500/1000 req/s, 30 s window each,
 3 trials per rate, warmup discarded. Values below are the **median across trials**.
 
+## Results — Worker delivery throughput (before / after parallelization)
+
+Baseline: sequential worker (one delivery at a time, claim batch of 10 every
+5 s tick). After: adaptive drain loop (a full claim batch of 50 triggers an
+immediate re-claim instead of sleeping) with a bounded pool of 8 dispatch
+goroutines per batch. Events seeded as PENDING rows with `next_retry_at = NOW()`,
+target = the app's own `/healthz` (fast local sink), timing = wall clock until
+every event is `DELIVERED` (`bench/delivery.sh`).
+
+| Worker | Events | Drain time | Throughput |
+|---|---|---|---|
+| sequential (before) | 100 | 48 s | **2.1 events/s** |
+| pool of 8 + drain loop (after) | 5000 | 1–3 s | **1666–5000 events/s** |
+
+~800× improvement in backlog drain rate. The queue-correctness claim is
+unchanged: each event is still claimed exactly once via `FOR UPDATE SKIP
+LOCKED`, so concurrent delivery of different events stays safe and duplicate
+deliveries remain impossible.
+
 ## Results — `POST /api/v1/events/{endpoint_id}`
 
 | Rate | p50 | p95 | p99 | Success | Throughput |
