@@ -26,6 +26,26 @@ webhook disablement.
 Rate-paced attacks (open-loop) at 100/250/500/1000 req/s, 30 s window each,
 3 trials per rate, warmup discarded. Values below are the **median across trials**.
 
+## Footprint
+
+| Item | Size | How measured |
+|---|---|---|
+| Go static binary | ~14 MB | `docker cp` out of a created (stopped) scratch container, then `ls -lh` — arm64, unstripped |
+| Runtime image, uncompressed | ~22.9 MB | `docker images` (binary + built dashboard + CA certs on `scratch`) |
+| Idle memory (RSS) | ~12.4 MiB | `docker stats --no-stream` at 0% CPU |
+| Peak memory, 5000-event backlog drain | ~14.3 MiB | `docker stats` sampled during `bench/delivery.sh 5000` |
+
+Notes for accuracy:
+
+- The binary/image sizes on disk are exact; memory figures are **approximate** —
+  `docker stats` reads cgroup usage (RSS + kernel memory + some page cache),
+  which lands within a couple of MiB of true process RSS rather than being a
+  ground-truth `/proc` read (impossible to exec into a shell-less scratch image).
+- Go's GC returns freed heap to the OS lazily, so RSS stays briefly elevated
+  after a burst; the drain peak above is a sampled observation, not a guaranteed max.
+- The builder stages use ~1 GB each (Go + Node toolchains); the shipped artifact
+  is the 23 MB scratch container above.
+
 ## Results — Worker delivery throughput (before / after parallelization)
 
 Baseline: sequential worker (one delivery at a time, claim batch of 10 every

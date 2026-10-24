@@ -14,6 +14,8 @@ PingDeck sits between external webhook providers (Stripe, GitHub, Slack, Shopify
 * **No Dual-Write Bugs:** Uses PostgreSQL `FOR UPDATE SKIP LOCKED` + in-process worker nudges instead of a separate Redis queue, eliminating dual-write failures and cutting infrastructure in half.
 * **Two-Door Signature Verification:** Verifies the provider's HMAC at ingest (Stripe/GitHub/Slack/Shopify/custom schemes, constant-time compares), then signs every outbound attempt freshly — never a stale provider timestamp.
 * **Automatic Retries:** Downstream `4xx`/`5xx`/timeouts retry with exponential backoff (`2^attempt` seconds, capped at 1 h).
+* **Measured Performance:** Sustains 1000 rps webhook ingest (p50 < 1 ms, 100% success) and drains backlogs at 1000+ events/s — reproducible scripts and methodology in `docs/BENCHMARKS.md`.
+* **Tiny Footprint:** A ~14 MB static binary and ~23 MB scratch image that idle at ~12 MiB of RAM.
 * **Visual Replay Deck:** Inspect headers, raw payloads, and downstream responses live via Server-Sent Events (SSE). Replay single or batch events with one click.
 * **Single-Binary Deployment:** The Go backend (Ingestion API, Control API, Dispatch Worker) is one binary; the React dashboard builds to static assets alongside it.
 
