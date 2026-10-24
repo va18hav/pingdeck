@@ -1,5 +1,7 @@
 # PingDeck
 
+[![CI](https://github.com/va18hav/pingdeck/actions/workflows/ci.yml/badge.svg)](https://github.com/va18hav/pingdeck/actions/workflows/ci.yml)
+
 > Fail-safe webhook proxy, automatic retry engine, and visual replay deck.
 
 PingDeck sits between external webhook providers (Stripe, GitHub, Slack, Shopify, WooCommerce, Razorpay, Sentry) and your application services. It verifies each provider's signature at the front door, buffers events as raw bytes in PostgreSQL before forwarding, and delivers with its own fresh signature — so nothing is lost during deploys, outages, or downstream crashes.
