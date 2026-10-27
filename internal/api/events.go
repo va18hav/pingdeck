@@ -115,6 +115,12 @@ func (h *EventHandler) Get(w http.ResponseWriter, r *http.Request) {
 // Replay resets a FAILED event to PENDING so the worker reclaims it.
 func (h *EventHandler) Replay(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("event_id")
+	// Same guard as ReplayEndpoint: a malformed id would otherwise hit a
+	// Postgres uuid-cast error and surface as a 500.
+	if !isValidUUID(id) {
+		http.Error(w, "Invalid event id", http.StatusBadRequest)
+		return
+	}
 	we, err := h.store.ReplayEvent(r.Context(), id)
 	if err != nil {
 		if errors.Is(err, db.ErrNotFound) {
